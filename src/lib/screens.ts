@@ -10,6 +10,7 @@ export const SCREEN_LABELS: Record<string, string> = {
   primanja: 'Moj doprinos',
   aktivnost: 'Aktivnost',
   primi: 'Primi',
+  bista: 'Bista · 3D',
 };
 
 export const screenLabel = (s: string) => SCREEN_LABELS[s] ?? s;

@@ -100,6 +100,23 @@ P2P → izvan EMT); ulaganje u baštinu = trošak programske djelatnosti (NE gra
 9. **Brand tokeni:** `navy` = zelena, `orange` = zlato (imena zadržana). Ne hardkodiraj hex u komponentama
    (ostali su samo progress-bar gradijenti i Logo bg — usklađeni na zelenu/zlato).
 
+## 3D bista (crowdfunding feature)
+
+- **Ekran `bista`** (`src/screens/Bista.tsx`) — crowdfunding za odljev (bronca/kamen) i postavljanje biste
+  kralja Tomislava po gradovima; 3D model se vrti, donator vidi što će se izraditi. Vezano uz 1100. obljetnicu
+  Hrvatskoga Kraljevstva (DBHZ je glavni inicijator — činjenica).
+- **3D render:** `src/screens/BistaViewer.tsx` (three.js + `@react-three/fiber@8` + `@react-three/drei@9`,
+  React-18-kompatibilne verzije). **Lazy-loadan** (`React.lazy` u `Bista.tsx` i u `App.tsx`) → three.js je u
+  zasebnom chunku (~915 KB), NE u glavnom bundleu. WebGL screenshot u headless Chromeu treba
+  `--enable-unsafe-swiftshader --use-gl=angle --use-angle=swiftshader` + `--virtual-time-budget`.
+- **Model:** `public/models/tomislav-bista.glb` (1,4 MB). Generiran iz `~/Downloads/Kralj Tomislav - Bista
+  final_300k.stl` (15 MB, binarni STL) skriptom `scripts/stl2glb.py` (trimesh: decimacija 300k→80k trokuta,
+  centriranje, normalizacija na 2 jed., export GLB). Model je Y-up → bez rotacije stoji uspravno; materijal
+  (bronca) postavlja se u `BistaViewer` (STL nema materijal).
+- ⚠️ **ATRIBUCIJA:** NE navoditi „bista autori Ivo Kerdić i Rudolf Betzler" kao činjenicu — neprovjereno
+  (Kerdić je radio MEDALJE Tomislava 1925., ne bistu; Betzler bez veze s Tomislavom). Dokumentirana bista je u
+  Starom gradu Ozlju (1933.), autor Robert Frangeš Mihanović. UI to drži ilustrativnim/„potvrditi prije objave".
+
 ## Konvencije
 
 - Sve UI kopije na hrvatskom; iznosi `Intl.NumberFormat('hr-HR', EUR)`.

@@ -17,6 +17,8 @@ import { SCREEN_LABELS } from './lib/screens';
 
 const DocsPage = lazy(() => import('./docs/DocsPage'));
 const FeedbackList = lazy(() => import('./feedback/FeedbackList'));
+// Bista (3D) lazy — three.js + R3F učitavaju se tek pri otvaranju ekrana.
+const Bista = lazy(() => import('./screens/Bista'));
 
 export type Screen =
   | 'home'
@@ -27,9 +29,10 @@ export type Screen =
   | 'poduzetnici'
   | 'primanja'
   | 'aktivnost'
-  | 'primi';
+  | 'primi'
+  | 'bista';
 
-const SCREENS: Screen[] = ['home', 'doniraj', 'clanarina', 'projekti', 'nagrade', 'poduzetnici', 'primanja', 'aktivnost', 'primi'];
+const SCREENS: Screen[] = ['home', 'doniraj', 'clanarina', 'projekti', 'nagrade', 'poduzetnici', 'primanja', 'aktivnost', 'primi', 'bista'];
 
 /** Deep-link: `?screen=home` uđe izravno na taj ekran (demo + screenshoti). */
 function deepLinkScreen(): Screen | null {
@@ -48,6 +51,7 @@ const TABS: { key: Screen; label: string; icon: string }[] = [
 const MORE_ITEMS: { s: Screen; label: string; desc: string; icon: string }[] = [
   { s: 'clanarina', label: 'Članarina', desc: 'Donatorska pretplata · prepaid', icon: 'M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6' },
   { s: 'nagrade', label: 'Priznanja · zmajEUR', desc: 'Volonterski rad · loyalty priznanja', icon: 'M12 15a7 7 0 100-14 7 7 0 000 14zM8.5 13.5L7 22l5-3 5 3-1.5-8.5' },
+  { s: 'bista', label: 'Bista · 3D', desc: 'Kralj Tomislav · crowdfunding odljeva', icon: 'M3 21h18M5 21V9l7-5 7 5v12M9 21v-7h6v7' },
   { s: 'poduzetnici', label: 'Baština', desc: 'Objekti i projekti · javni registar', icon: 'M22 10L12 5 2 10l10 5 10-5zM6 12v5c0 1 2.7 3 6 3s6-2 6-3v-5' },
   { s: 'primanja', label: 'Moj doprinos', desc: 'Naknade i priznanja od Družbe', icon: 'M12 3v12M8 11l4 4 4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2' },
   { s: 'primi', label: 'Primi', desc: 'QR adresa · SEPA nadoplata', icon: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM16 16h4v4h-4z' },
@@ -128,6 +132,11 @@ export function App() {
         {screen === 'primanja' && <Primanja go={setScreen} />}
         {screen === 'aktivnost' && <Aktivnost />}
         {screen === 'primi' && <Primi />}
+        {screen === 'bista' && (
+          <Suspense fallback={<div className="grid h-full place-items-center text-muted">Učitavanje 3D…</div>}>
+            <Bista />
+          </Suspense>
+        )}
       </div>
       <TabBar screen={screen} go={setScreen} onMore={() => setMore(true)} />
       {more && (
@@ -167,6 +176,7 @@ function DesktopSurround({ navigate }: { navigate: (s: Screen) => void }) {
     { label: 'Članarina', s: 'clanarina' },
     { label: 'Fondovi za baštinu', s: 'projekti' },
     { label: 'Priznanja · zmajEUR', s: 'nagrade' },
+    { label: 'Bista · 3D', s: 'bista' },
     { label: 'Baština', s: 'poduzetnici' },
     { label: 'Moj doprinos', s: 'primanja' },
     { label: 'Aktivnost', s: 'aktivnost' },
@@ -312,6 +322,14 @@ const SCREEN_DOCS: Record<DocKey, { title: string; points: string[] }> = {
       'Primanje EURe preko QR/adrese Safea (EIP-681 format).',
       'SEPA nadoplata: payment intent → dijeljeni backend → Monerium most banka→EURe.',
       'Adresa je counterfactual do prvog deploya Safea.',
+    ],
+  },
+  bista: {
+    title: 'Bista · 3D crowdfunding',
+    points: [
+      '3D model (glTF/GLB ~1,4 MB, decimiran s 300k na 80k trokuta) renderiran u three.js / React Three Fiber — lazy chunk.',
+      'Prihodovni model: doprinosi u EURe za odljev (bronca/kamen) i postavljanje bisti po gradovima.',
+      'Donator u 3D-u vidi što će se stvarno izraditi — emocija prije odljeva. Iznosi i atribucija ilustrativni za demo.',
     ],
   },
 };

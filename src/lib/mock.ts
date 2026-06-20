@@ -314,6 +314,40 @@ export const communityStats = {
   avgInvestment: 4550, // ILUSTRATIVNO — usklađeno: 27300 / 6 prikazanih projekata
 };
 
+// ── Bista kralja Tomislava: 3D crowdfunding kampanja ─────────────────────────
+// Prihodovni model: Družba prikuplja sredstva za ODLJEV (bronca/kamen) i postavljanje
+// bisti kralja Tomislava po gradovima u HR i inozemstvu; donator u 3D-u vidi što će se
+// stvarno izraditi. Vezano uz 1100. obljetnicu Hrvatskoga Kraljevstva (2025.) — ČINJENICA
+// da je DBHZ glavni inicijator obilježavanja (dbhz.hr/1100-hk).
+// ⚠️ ATRIBUCIJA MODELA NEPROVJERENA: dokumentirana povijesna bista kralja Tomislava je u
+// Starom gradu Ozlju (1933.), autor Robert Frangeš Mihanović (Ozalj je DBHZ lokalitet);
+// 3D model ovdje je digitalizacija za demo kampanje, autorstvo treba potvrditi. Iznosi,
+// lokacije i broj donatora su ILUSTRATIVNI demo.
+export type BistaTier = { id: string; label: string; amount: number; perk: string };
+export type BistaCity = { city: string; status: 'postavljeno' | 'u tijeku' | 'predloženo' };
+export const bistaCampaign = {
+  title: 'Bista kralja Tomislava',
+  subtitle: 'Crowdfunding za brončani i kameni odljev — za gradove u Hrvatskoj i inozemstvu',
+  raised: 18600, // € — ILUSTRATIVNO
+  goal: 45000, // € — ILUSTRATIVNO (procjena prvog brončanog odljeva + postolje)
+  backers: 214, // ILUSTRATIVNO
+  castCost: 45000, // € po odljevu — ILUSTRATIVNO
+  model: '/models/tomislav-bista.glb',
+  note: '3D digitalizacija za demo kampanje. Povijesna bista kralja Tomislava dokumentirana je u Starom gradu Ozlju (1933.). Autorstvo ovog modela i iznosi su ilustrativni — potvrditi prije objave.',
+  tiers: [
+    { id: 'prijatelj', label: 'Prijatelj baštine', amount: 25, perk: 'Ime na zahvalnici uz spomenik' },
+    { id: 'mecena', label: 'Mecena', amount: 100, perk: 'Zahvalnica + pozivnica na otkrivanje' },
+    { id: 'pokrovitelj', label: 'Pokrovitelj odljeva', amount: 500, perk: 'Ugravirano ime na postolju' },
+  ] as BistaTier[],
+  cities: [
+    { city: 'Zagreb', status: 'u tijeku' },
+    { city: 'Ozalj', status: 'predloženo' },
+    { city: 'Knin', status: 'predloženo' },
+    { city: 'Tomislavgrad (BiH)', status: 'predloženo' },
+    { city: 'Chicago (SAD)', status: 'predloženo' },
+  ] as BistaCity[],
+};
+
 // ── Transparentnost Družbe ───────────────────────────────────────────────────
 // ČINJENICE (dbhz.hr/kontakt + Registar udruga + statut „Ordo Draconicus" 2024.):
 // OIB, IBAN, banka, godina osnutka i obnove, registarski broj, sjedište.
