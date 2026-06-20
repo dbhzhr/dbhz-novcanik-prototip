@@ -1,0 +1,14 @@
+# Service worker mora biti uvijek svjež da update prođe
+/sw.js
+  Cache-Control: no-cache
+
+/manifest.webmanifest
+  Cache-Control: public, max-age=3600
+
+# Fontovi i ikone — dugotrajni cache (sadržaj se ne mijenja)
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+/icons/*
+  Cache-Control: public, max-age=604800
+/brand/*
+  Cache-Control: public, max-age=604800

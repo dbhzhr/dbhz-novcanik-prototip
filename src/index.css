@@ -1,0 +1,297 @@
+/* Titillium Web — font dbhz.hr (Google Fonts / SIL OFL — besplatno).
+   Učitava se iz CDN-a (link u index.html). latin-ext podskup nosi hr znakove.
+   Brand boje izvedene iz STVARNOG zmajskog grba i CSS teme dbhz.hr (zmajska
+   zelena + heraldičko zlato). Token-imena `navy`/`orange` zadržana radi
+   kompatibilnosti komponenti (navy = zelena, orange = zlatna). */
+
+/* ── Tema: brand tokeni kao CSS varijable (RGB kanali za <alpha-value>) ──────
+   :root / .theme-light = svijetla; .theme-dark = tamna. Svi Tailwind tokeni
+   (bg-navy, text-navy-ink, bg-surface…) automatski prate temu. */
+:root,
+.theme-light {
+  --navy: 12 84 48; /* DBHZ zmajska zelena #0C5430 (header, naslovi) */
+  --navy-mid: 20 110 66; /* svjetlija zelena (linkovi, sekundarno) */
+  --navy-deep: 6 39 22; /* najtamnija zelena #062716 (hover, gradijent) */
+  --navy-ink: 31 41 33; /* tijelo teksta (tamno zelenkasto) */
+  --orange: 217 158 18; /* heraldičko zlato #D99E12 — CTA, akcent */
+  --orange-light: 240 200 96;
+  --muted: 92 104 94; /* prigušena zeleno-siva */
+  --surface: 255 255 255;
+  --page: 247 248 244; /* topla off-white sa zelenkastim tonom */
+  --hairline: 222 230 222;
+  --chip: 238 244 236;
+  --chipline: 214 226 214;
+}
+.theme-dark {
+  --navy: 64 178 110; /* posvijetljena zelena (kontrast na tamnom) #40B26E */
+  --navy-mid: 122 206 158;
+  --navy-deep: 6 39 22; /* tamna zelena ostaje za hover/gradijent */
+  --navy-ink: 224 232 224; /* tijelo teksta (svijetlo) */
+  --orange: 224 168 40; /* zlatna malo svjetlija na tamnom #E0A828 */
+  --orange-light: 240 200 96;
+  --muted: 150 166 152;
+  --surface: 16 33 24; /* tamna zelena kartica #102118 */
+  --page: 8 22 16; /* duboka zelena-crna pozadina #081610 */
+  --hairline: 34 58 44;
+  --chip: 24 44 32;
+  --chipline: 44 72 54;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* NB: desktop „~80% zoom" više NIJE na html (lomio je mermaidovo mjerenje teksta
+   na /dokumenti). Sada je `md:[zoom:0.8]` SAMO na app-kompoziciji u App.tsx
+   (uz `md:min-h-[125dvh]` za centriranje). Docs stranice ostaju na zoom 1.0. */
+
+/* Base sloj — mora biti u @layer base da utility klase pobijede (Tailwind v3). */
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    font-family: 'Titillium Web', Inter, 'Segoe UI', system-ui, sans-serif;
+    font-weight: 400;
+    color: rgb(var(--navy-ink));
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* DBHZ potpis: zmajska zelena dubina + heraldički zlatni sjaj */
+    background-color: rgb(var(--page));
+    background-image:
+      radial-gradient(60rem 60rem at 0% 0%, rgb(var(--orange) / 0.11), transparent 60%),
+      radial-gradient(60rem 60rem at 100% 100%, rgb(var(--navy) / 0.1), transparent 60%);
+    background-attachment: fixed;
+  }
+  h1,
+  h2,
+  h3 {
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: rgb(var(--navy));
+  }
+}
+
+@layer components {
+  /* Eyebrow / kicker — uppercase zlatni micro-label (heraldički akcent) */
+  .eyebrow {
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgb(var(--orange));
+  }
+}
+
+/* ── Dokumentacija (renderirani markdown + mermaid) ─────────────────────── */
+.doc-content {
+  color: #2a2a2a;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+.doc-content h1 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #0C5430;
+  margin: 1.6rem 0 0.6rem;
+  line-height: 1.15;
+}
+.doc-content h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0C5430;
+  margin: 1.8rem 0 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e8e0d2;
+}
+.doc-content h3 {
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: #146E42;
+  margin: 1.2rem 0 0.4rem;
+}
+.doc-content p {
+  margin: 0.7rem 0;
+}
+.doc-content ul,
+.doc-content ol {
+  margin: 0.7rem 0;
+  padding-left: 1.3rem;
+}
+.doc-content li {
+  margin: 0.3rem 0;
+}
+.doc-content ul {
+  list-style: disc;
+}
+.doc-content ol {
+  list-style: decimal;
+}
+.doc-content a {
+  color: #0C5430;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.doc-content strong {
+  color: #0C5430;
+  font-weight: 700;
+}
+.doc-content code {
+  background: #f3ede0;
+  border: 1px solid #e3d9c6;
+  border-radius: 6px;
+  padding: 0.05rem 0.35rem;
+  font-size: 0.85em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.doc-content pre {
+  background: #2b211b;
+  color: #f3ece0;
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+}
+.doc-content pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+}
+.doc-content blockquote {
+  border-left: 3px solid #D99E12;
+  background: #faf3e2;
+  border-radius: 0 12px 12px 0;
+  padding: 0.6rem 1rem;
+  margin: 1rem 0;
+  color: #4a4a4a;
+}
+.doc-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+  display: block;
+  overflow-x: auto;
+}
+.doc-content th,
+.doc-content td {
+  border: 1px solid #e8e0d2;
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+}
+.doc-content th {
+  background: #f3ede0;
+  color: #0C5430;
+  font-weight: 700;
+}
+.doc-content hr {
+  border: 0;
+  border-top: 1px solid #e8e0d2;
+  margin: 1.6rem 0;
+}
+
+/* Mermaid dijagram u kartici */
+.doc-diagram {
+  background: #ffffff;
+  border: 1px solid #e8e0d2;
+  border-radius: 18px;
+  padding: 1.1rem;
+  margin: 1.2rem 0;
+  overflow-x: auto;
+  box-shadow: 0 12px 32px rgba(12, 84, 48, 0.10);
+}
+.doc-diagram svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Desktop: dijagrami pune cijelu širinu ekrana (izlaze iz tekstualnog kontejnera). */
+@media (min-width: 768px) {
+  .doc-diagram {
+    width: 100vw;
+    max-width: 100vw;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    padding: 1.75rem clamp(1.5rem, 5vw, 5rem);
+  }
+  .doc-diagram svg {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+.doc-mermaid-err {
+  background: #faf3e2;
+  border: 1px solid #D99E12;
+  border-radius: 12px;
+  padding: 0.8rem;
+  font-size: 0.8rem;
+  overflow-x: auto;
+}
+
+/* ── Dark tema: dokumentacija (markdown ima tvrde hex boje) ─────────────── */
+.theme-dark .doc-content {
+  color: #cfc9bf;
+}
+.theme-dark .doc-content h1,
+.theme-dark .doc-content h2 {
+  color: rgb(var(--navy));
+  border-top-color: rgb(var(--hairline));
+}
+.theme-dark .doc-content h3 {
+  color: rgb(var(--navy-mid));
+}
+.theme-dark .doc-content strong {
+  color: rgb(var(--navy));
+}
+.theme-dark .doc-content a {
+  color: rgb(var(--navy-mid));
+}
+.theme-dark .doc-content code {
+  background: rgb(var(--chip));
+  border-color: rgb(var(--chipline));
+  color: #e9e3d9;
+}
+.theme-dark .doc-content th {
+  background: rgb(var(--chip));
+  color: rgb(var(--navy));
+}
+.theme-dark .doc-content th,
+.theme-dark .doc-content td {
+  border-color: rgb(var(--hairline));
+}
+.theme-dark .doc-content blockquote {
+  background: #2a2018;
+  color: #cfc9bf;
+}
+.theme-dark .doc-content hr {
+  border-top-color: rgb(var(--hairline));
+}
+/* Mermaid dijagrami ostaju na svijetloj kartici radi čitljivosti čvorova */
+.theme-dark .doc-diagram {
+  background: #f3ece0;
+  border-color: #d8cdb8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

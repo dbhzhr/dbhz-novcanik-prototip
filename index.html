@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="hr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/brand/fingerprint.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0C5430" />
+    <!-- Titillium Web — Google Fonts (SIL OFL, besplatno), latin + latin-ext za hr znakove -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+    <!-- Tema prije paint-a (bez bljeska): light po defaultu, dark iz localStorage -->
+    <script>
+      (function () {
+        try {
+          var p = new URLSearchParams(location.search).get('theme');
+          var t = p === 'dark' || p === 'light' ? p : localStorage.getItem('dbhz_theme') === 'dark' ? 'dark' : 'light';
+          if (p === 'dark' || p === 'light') localStorage.setItem('dbhz_theme', t);
+          document.documentElement.classList.add('theme-' + t);
+          document.documentElement.style.colorScheme = t;
+          if (t === 'dark') {
+            var m = document.querySelector('meta[name="theme-color"]');
+            if (m) m.setAttribute('content', '#081610');
+          }
+        } catch (e) {
+          document.documentElement.classList.add('theme-light');
+        }
+      })();
+    </script>
+    <meta name="description" content="Novčanik Družbe „Braća Hrvatskoga Zmaja” — donacije, članarina, fondovi za očuvanje kulturne baštine i zmajEUR priznanje volonterskog rada. Svaki euro javan i auditabilan." />
+
+    <!-- PWA / Add to Home Screen (iOS) -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="DBHZ novčanik" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+
+    <title>DBHZ novčanik · Čuvamo hrvatsku kulturnu baštinu</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

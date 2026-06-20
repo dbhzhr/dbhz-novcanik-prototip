@@ -1,0 +1,10 @@
+name = "dbhz-prototip"
+compatibility_date = "2026-05-01"
+pages_build_output_dir = "dist"
+# CF account_id NIJE podržan u Pages wrangler.toml — postavi CLOUDFLARE_ACCOUNT_ID env
+# (account: D.O.M. = 7dc7167b7e2e00923bfa7cd697df14e4)
+
+# Feedback prototipa (komentari Meštarskog zbora) — Pages Function /api/feedback
+[[kv_namespaces]]
+binding = "FEEDBACK_KV"
+id = "7bca47ff6cf84d1a8a885e14dca28c5c"
