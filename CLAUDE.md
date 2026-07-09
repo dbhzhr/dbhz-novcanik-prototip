@@ -110,9 +110,18 @@ P2P → izvan EMT); ulaganje u baštinu = trošak programske djelatnosti (NE gra
   zasebnom chunku (~915 KB), NE u glavnom bundleu. WebGL screenshot u headless Chromeu treba
   `--enable-unsafe-swiftshader --use-gl=angle --use-angle=swiftshader` + `--virtual-time-budget`.
 - **Model:** `public/models/tomislav-bista.glb` (1,4 MB). Generiran iz `~/Downloads/Kralj Tomislav - Bista
-  final_300k.stl` (15 MB, binarni STL) skriptom `scripts/stl2glb.py` (trimesh: decimacija 300k→80k trokuta,
-  centriranje, normalizacija na 2 jed., export GLB). Model je Y-up → bez rotacije stoji uspravno; materijal
-  (bronca) postavlja se u `BistaViewer` (STL nema materijal).
+  final_300k.stl` (15 MB, binarni STL) skriptom `scripts/fix_upright.py` (trimesh: decimacija 300k→80k,
+  **geometrijsko ispravljanje nagiba**, centriranje, normalizacija na 2 jed., export GLB). ⚠️ **STL scan je
+  nagnut 42.8°** — stara `scripts/stl2glb.py` NE rotira pa daje nagnutu bistu; `fix_upright.py` nađe najveću
+  koplanarnu plohu na rubu modela (ravno dno postolja) i poravna njenu normalu na −Y. Materijal (bronca)
+  postavlja se u `BistaViewer` (STL nema materijal).
+- **Rotacija zaključana na vertikalu:** OrbitControls `minPolarAngle === maxPolarAngle` (82° = 8° iznad
+  horizonta) + `enablePan={false}` → samo azimut (360° lijevo-desno), pogled se ne može okrenuti naglavačke.
+- **Standalone verzija komponente:** `/Users/ms/git/dbhz/bista-3d` (Vite + React 18 + R3F 8 + drei 9, iste
+  verzije kao wallet) — izolirani razvoj/demo, komponenta `src/BistaViewer.tsx` s propsima
+  (elevationDeg/autoRotate/initialDistance/materialColor).
+- **Headless WebGL screenshot:** `--virtual-time-budget` VISI uz autoRotate (rAF petlja drži virtual time) —
+  koristi `--headless=new --timeout=12000` + swiftshader flagove; povremeno flaky (prazan frame → ponovi).
 - ⚠️ **ATRIBUCIJA:** NE navoditi „bista autori Ivo Kerdić i Rudolf Betzler" kao činjenicu — neprovjereno
   (Kerdić je radio MEDALJE Tomislava 1925., ne bistu; Betzler bez veze s Tomislavom). Dokumentirana bista je u
   Starom gradu Ozlju (1933.), autor Robert Frangeš Mihanović. UI to drži ilustrativnim/„potvrditi prije objave".

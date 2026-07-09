@@ -48,6 +48,10 @@ export default function BistaViewer() {
       </Suspense>
       <OrbitControls
         enablePan={false}
+        // Rotacija ZAKLJUČANA na vertikalnu os: polarni kut fiksan (min === max, 8° iznad
+        // horizonta) → bista se vrti samo lijevo-desno, pogled se ne može okrenuti naglavačke.
+        minPolarAngle={THREE.MathUtils.degToRad(82)}
+        maxPolarAngle={THREE.MathUtils.degToRad(82)}
         autoRotate
         autoRotateSpeed={0.9}
         minDistance={2.2}
