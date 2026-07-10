@@ -126,8 +126,13 @@ P2P → izvan EMT); ulaganje u baštinu = trošak programske djelatnosti (NE gra
 - **Standalone verzija komponente:** `/Users/ms/git/dbhz/bista-3d` (Vite + React 18 + R3F 8 + drei 9, iste
   verzije kao wallet) — izolirani razvoj/demo, komponenta `src/BistaViewer.tsx` s propsima
   (elevationDeg/autoRotate/initialDistance/materialColor).
+- **FitCamera (responzivno kadriranje):** na promjenu veličine viewporta (fullscreen, rotacija ekrana)
+  postavlja udaljenost kamere da cijeli model stane po visini i širini — širina preko horizontalnog
+  cirkumradiusa (pola XZ dijagonale, jer se bista vrti) fitana na najbližoj plohi. Unutar Suspense.
 - **Headless WebGL screenshot:** `--virtual-time-budget` VISI uz autoRotate (rAF petlja drži virtual time) —
   koristi `--headless=new --timeout=12000` + swiftshader flagove; povremeno flaky (prazan frame → ponovi).
+  ⚠️ NEPOUZDAN za provjeru kadriranja/kamere (pokazivao staru udaljenost) — kadar verificiraj kroz
+  chrome-devtools MCP u pravom Chromeu (`new_page` + `resize_page` + klik = trusted gesture za fullscreen).
 - ⚠️ **ATRIBUCIJA:** NE navoditi „bista autori Ivo Kerdić i Rudolf Betzler" kao činjenicu — neprovjereno
   (Kerdić je radio MEDALJE Tomislava 1925., ne bistu; Betzler bez veze s Tomislavom). Dokumentirana bista je u
   Starom gradu Ozlju (1933.), autor Robert Frangeš Mihanović. UI to drži ilustrativnim/„potvrditi prije objave".
