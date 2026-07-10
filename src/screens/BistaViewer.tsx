@@ -11,10 +11,12 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Center, ContactShadows, useGLTF } from '@react-three/drei';
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import * as THREE from 'three';
 import { bistaCampaign } from '../lib/mock';
 
 const MODEL = bistaCampaign.model;
+const BG = '#0c1c13';
 
 type BistaVariant = 'bronca' | 'kamen' | 'patina';
 
@@ -38,6 +40,9 @@ function variantFromUrl(): BistaVariant | null {
 
 function Bust({ variant }: { variant: BistaVariant }) {
   const { scene } = useGLTF(MODEL);
+  // KLON scene: useGLTF kešira jedan THREE.Object3D, a isti objekt ne može biti u
+  // dva scene grapha istovremeno (inline canvas + fullscreen overlay canvas).
+  const instance = useMemo(() => scene.clone(true), [scene]);
   const material = useMemo(() => {
     const v = VARIANTS[variantFromUrl() ?? 'bronca'];
     return new THREE.MeshStandardMaterial({
@@ -47,7 +52,7 @@ function Bust({ variant }: { variant: BistaVariant }) {
     });
   }, []);
   useLayoutEffect(() => {
-    scene.traverse((o: THREE.Object3D) => {
+    instance.traverse((o: THREE.Object3D) => {
       const mesh = o as THREE.Mesh;
       if (mesh.isMesh) {
         mesh.material = material;
@@ -55,7 +60,7 @@ function Bust({ variant }: { variant: BistaVariant }) {
         (mesh.geometry as THREE.BufferGeometry).computeVertexNormals();
       }
     });
-  }, [scene, material]);
+  }, [instance, material]);
 
   const targetColor = useMemo(() => new THREE.Color(VARIANTS[variant].color), [variant]);
   useFrame((_, dt) => {
@@ -66,7 +71,7 @@ function Bust({ variant }: { variant: BistaVariant }) {
     material.metalness += (t.metalness - material.metalness) * k;
     material.roughness += (t.roughness - material.roughness) * k;
   });
-  return <primitive object={scene} />;
+  return <primitive object={instance} />;
 }
 
 /** Responzivno kadriranje: na svaku promjenu veličine viewporta (fullscreen, rotacija
@@ -99,16 +104,59 @@ function FitCamera({ subjectRef }: { subjectRef: React.RefObject<THREE.Group> })
   return null;
 }
 
-/** inline = u layoutu · native = Fullscreen API · overlay = CSS fallback (iOS bez API-ja).
- *  Overlay je position:fixed — na mobitelu OK (nema transformiranog phone framea),
- *  na desktopu se nikad ne koristi jer tamo postoji nativni Fullscreen API. */
+/** Kompletna scena — vlastiti Canvas. Renderira se i inline (kartica) i u
+ *  fullscreen overlay portalu (svaki ima svoj WebGL kontekst i FitCamera). */
+function SceneCanvas({ variant }: { variant: BistaVariant }) {
+  const bustRef = useRef<THREE.Group>(null);
+  return (
+    <Canvas
+      shadows
+      dpr={[1, 2]}
+      camera={{ position: [0, 0.2, 3.6], fov: 40 }}
+      style={{ touchAction: 'none' }}
+    >
+      <color attach="background" args={[BG]} />
+      <ambientLight intensity={0.55} />
+      <directionalLight position={[4, 6, 5]} intensity={1.6} castShadow />
+      <directionalLight position={[-5, 2, -3]} intensity={0.5} color="#ffe6b0" />
+      <Suspense fallback={null}>
+        {/* Model je već Y-up i geometrijski uspravljen → bez rotacije stoji uspravno */}
+        <group ref={bustRef}>
+          <Center>
+            <Bust variant={variant} />
+          </Center>
+        </group>
+        <ContactShadows position={[0, -1.05, 0]} opacity={0.5} scale={7} blur={2.6} far={3} />
+        {/* Unutar Suspense → mounta se tek kad je model učitan (bbox postoji) */}
+        <FitCamera subjectRef={bustRef} />
+      </Suspense>
+      <OrbitControls
+        enablePan={false}
+        // Rotacija ZAKLJUČANA na vertikalnu os: polarni kut fiksan (min === max, 8° iznad
+        // horizonta) → bista se vrti samo lijevo-desno, pogled se ne može okrenuti naglavačke.
+        minPolarAngle={THREE.MathUtils.degToRad(82)}
+        maxPolarAngle={THREE.MathUtils.degToRad(82)}
+        autoRotate
+        autoRotateSpeed={0.9}
+        minDistance={2.2}
+        maxDistance={9}
+        enableDamping
+      />
+    </Canvas>
+  );
+}
+
+/** inline = u layoutu · native = Fullscreen API · overlay = portal fallback (iOS bez API-ja).
+ *  ⚠️ Overlay MORA ići kroz createPortal u document.body: `position:fixed` unutar app
+ *  stabla lomi se čim neki predak ima transform/animaciju (containing block!) — fixed se
+ *  tada računa od pretka, overlay se razvuče preko cijelog scroll-sadržaja i model
+ *  "potone" ispod vidljivog viewporta (viđeno na iOS Safari/PWA). */
 type FsMode = 'inline' | 'native' | 'overlay';
 
 export default function BistaViewer() {
   const [variant, setVariant] = useState<BistaVariant>(() => variantFromUrl() ?? 'bronca');
   const [fs, setFs] = useState<FsMode>('inline');
   const wrapRef = useRef<HTMLDivElement>(null);
-  const bustRef = useRef<THREE.Group>(null);
 
   useEffect(() => {
     // Izlaz iz nativnog fullscreena (Escape, gesta) mora sinkronizirati state.
@@ -131,6 +179,16 @@ export default function BistaViewer() {
     };
   }, []);
 
+  useEffect(() => {
+    // Overlay: zaključaj scroll pozadine dok je otvoren.
+    if (fs !== 'overlay') return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [fs]);
+
   const toggleFullscreen = async () => {
     const el = wrapRef.current as (HTMLDivElement & { webkitRequestFullscreen?: () => void }) | null;
     if (!el) return;
@@ -141,7 +199,7 @@ export default function BistaViewer() {
           setFs('native');
           return;
         } catch {
-          /* padamo na CSS overlay */
+          /* padamo na portal overlay */
         }
       } else if (el.webkitRequestFullscreen) {
         el.webkitRequestFullscreen();
@@ -158,48 +216,8 @@ export default function BistaViewer() {
     }
   };
 
-  const wrapStyle: React.CSSProperties =
-    fs === 'overlay'
-      ? { position: 'fixed', inset: 0, zIndex: 80, background: '#0c1c13' }
-      : { position: 'relative', width: '100%', height: '100%', background: '#0c1c13' };
-
-  return (
-    <div ref={wrapRef} style={wrapStyle}>
-      <Canvas
-        shadows
-        dpr={[1, 2]}
-        camera={{ position: [0, 0.2, 3.6], fov: 40 }}
-        style={{ touchAction: 'none' }}
-      >
-        <color attach="background" args={['#0c1c13']} />
-        <ambientLight intensity={0.55} />
-        <directionalLight position={[4, 6, 5]} intensity={1.6} castShadow />
-        <directionalLight position={[-5, 2, -3]} intensity={0.5} color="#ffe6b0" />
-        <Suspense fallback={null}>
-          {/* Model je već Y-up i geometrijski uspravljen → bez rotacije stoji uspravno */}
-          <group ref={bustRef}>
-            <Center>
-              <Bust variant={variant} />
-            </Center>
-          </group>
-          <ContactShadows position={[0, -1.05, 0]} opacity={0.5} scale={7} blur={2.6} far={3} />
-          {/* Unutar Suspense → mounta se tek kad je model učitan (bbox postoji) */}
-          <FitCamera subjectRef={bustRef} />
-        </Suspense>
-        <OrbitControls
-          enablePan={false}
-          // Rotacija ZAKLJUČANA na vertikalnu os: polarni kut fiksan (min === max, 8° iznad
-          // horizonta) → bista se vrti samo lijevo-desno, pogled se ne može okrenuti naglavačke.
-          minPolarAngle={THREE.MathUtils.degToRad(82)}
-          maxPolarAngle={THREE.MathUtils.degToRad(82)}
-          autoRotate
-          autoRotateSpeed={0.9}
-          minDistance={2.2}
-          maxDistance={9}
-          enableDamping
-        />
-      </Canvas>
-
+  const controls = (
+    <>
       {/* Izbor materijala — swatchevi (prijelaz je animiran u Bust/useFrame) */}
       <div style={{ position: 'absolute', top: 10, left: 10, display: 'flex', gap: 8 }}>
         {VARIANT_ORDER.map((v) => (
@@ -253,6 +271,21 @@ export default function BistaViewer() {
           )}
         </svg>
       </button>
+    </>
+  );
+
+  return (
+    <div ref={wrapRef} style={{ position: 'relative', width: '100%', height: '100%', background: BG }}>
+      <SceneCanvas variant={variant} />
+      {controls}
+      {fs === 'overlay' &&
+        createPortal(
+          <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: BG }}>
+            <SceneCanvas variant={variant} />
+            {controls}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
