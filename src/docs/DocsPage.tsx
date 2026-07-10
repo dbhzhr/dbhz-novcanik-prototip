@@ -4,6 +4,7 @@ import mermaid from 'mermaid';
 import { navigate } from '../lib/router';
 
 // Markdown dokumenti (single source — bundlani kao string, lazy chunk).
+import isplativostMd from '../../docs/compliance/isplativost-wallet.md?raw';
 import uvjetiMd from '../../docs/compliance/uvjeti-koristenja-novcanika.md?raw';
 import edeurMd from '../../docs/compliance/edeur-loyalty-token.md?raw';
 import poreziMd from '../../docs/compliance/porezi-i-transparentnost.md?raw';
@@ -49,6 +50,12 @@ function ensureFonts(): Promise<unknown> {
 }
 
 const DOCS: Record<string, { slug: string; title: string; blurb: string; md: string }> = {
+  isplativost: {
+    slug: 'isplativost',
+    title: 'Isplativost — novčanik vs. ostali kanali',
+    blurb: 'Zašto mikrodonacije i tjedna članarina kroz novčanik financijski nadmašuju karticu, IBAN i SMS — s projekcijama kroz godine i dijagramima.',
+    md: isplativostMd,
+  },
   'uvjeti-koristenja': {
     slug: 'uvjeti-koristenja',
     title: 'Uvjeti korištenja novčanika',

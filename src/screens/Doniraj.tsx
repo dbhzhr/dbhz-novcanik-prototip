@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { donationPresets, eur } from '../lib/mock';
 import { Button, Card, ScreenTitle } from '../components/ui';
-import { Search } from '../components/icons';
+import { FileText, Search } from '../components/icons';
+import { navigate } from '../lib/router';
 
 export function Doniraj() {
   const [amount, setAmount] = useState(30);
@@ -65,6 +66,13 @@ export function Doniraj() {
             ulaganje u baštinu javno su vidljivi javnosti kroz auditiranu blockchain platformu.
           </p>
         </div>
+
+        <button
+          onClick={() => navigate('/dokumenti/isplativost')}
+          className="inline-flex w-full items-center justify-center gap-1.5 text-[0.72rem] font-semibold text-navy-mid transition hover:text-orange"
+        >
+          <FileText size={13} strokeWidth={2} aria-hidden /> Zašto je ovo isplativije · projekcije kroz godine →
+        </button>
 
         <Button full>Doniraj {eur(amount)}{recurring ? ' / mjesečno' : ''}</Button>
       </div>
