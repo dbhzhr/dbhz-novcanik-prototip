@@ -102,6 +102,9 @@ P2P → izvan EMT); ulaganje u baštinu = trošak programske djelatnosti (NE gra
 
 ## 3D bista (crowdfunding feature)
 
+**Trajni tehnički vodič s dijagramima: [`docs/3d-bista-tehnicki-vodic.md`](docs/3d-bista-tehnicki-vodic.md)**
+(pipeline ispravljanja nagiba, FitCamera geometrija, fullscreen portal bug, materijali, verifikacija).
+
 - **Ekran `bista`** (`src/screens/Bista.tsx`) — crowdfunding za odljev (bronca/kamen) i postavljanje biste
   kralja Tomislava po gradovima; 3D model se vrti, donator vidi što će se izraditi. Vezano uz 1100. obljetnicu
   Hrvatskoga Kraljevstva (DBHZ je glavni inicijator — činjenica).
