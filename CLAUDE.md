@@ -121,8 +121,11 @@ P2P → izvan EMT); ulaganje u baštinu = trošak programske djelatnosti (NE gra
   `MeshStandardMaterial` (model nema teksture), prijelaz se ANIMIRA lerpanjem color/metalness/roughness u
   `useFrame` (~1 s, eksponencijalno prigušenje). Swatchevi gore lijevo u vieweru. Deep-link:
   `?screen=bista&materijal=kamen|patina|bronca` (koristi se i za headless testiranje varijanti).
-- **Fullscreen toggle:** gumb gore desno; nativni Fullscreen API + CSS `position:fixed` overlay fallback za
-  iOS. Fallback je siguran jer na mobitelu nema transformiranog phone framea (desktop uvijek ide nativno).
+- **Fullscreen toggle:** gumb gore desno; nativni Fullscreen API + overlay fallback za iOS. ⚠️ Overlay MORA
+  ići kroz `createPortal(document.body)` s vlastitim Canvasom — `position:fixed` unutar app stabla se lomi
+  jer predak s transformom/animacijom (`animate-riseIn`!) postaje containing block → model "potone" ispod
+  viewporta (viđeno na iPhoneu). GLTF scenu klonirati (`scene.clone(true)`) — isti THREE objekt ne može u
+  dva scene grapha. Repro na desktopu: `delete Element.prototype.requestFullscreen` (+ webkit) pa klik.
 - **Standalone verzija komponente:** `/Users/ms/git/dbhz/bista-3d` (Vite + React 18 + R3F 8 + drei 9, iste
   verzije kao wallet) — izolirani razvoj/demo, komponenta `src/BistaViewer.tsx` s propsima
   (elevationDeg/autoRotate/initialDistance/materialColor).
