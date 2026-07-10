@@ -56,6 +56,37 @@ export const community = {
 
 export const donationPresets = [10, 30, 50];
 
+// ── Solidarna kampanja: obnova krovišta Starog grada Ozlja ───────────────────
+// STVARNI kontekst: Družba od 2006. vodi obnovu Starog grada Ozlja (dbhz.hr);
+// obnova krovišta i pročelja dvorca je stvarni, dugogodišnji projekt.
+// ⚠️ Cilj, prikupljeni iznos, broj donatora i stanje fonda su ILUSTRATIVNI demo
+// (Družba ne objavljuje financijske brojke) — pokazuju KAKO bi kampanja izgledala.
+export const solidarity = {
+  active: true,
+  eyebrow: 'Solidarna kampanja',
+  title: 'Obnova krovišta — Stari grad Ozalj',
+  story:
+    'Krovište dvorca Ozalj traži sanaciju kako oborine ne bi oštetile već obnovljene dijelove i građu koju dvorac čuva. Družba obnavlja Stari grad Ozalj od 2006. — svaki doprinos ide izravno na namjenski račun kampanje. Sredstva prikupljena iznad cilja prelijevaju se u trajni Fond „Stari grad Ozalj".',
+  goal: 12000, // € — ILUSTRATIVNO (demo)
+  raised: 7350, // € — ILUSTRATIVNO (demo)
+  donors: 96, // ILUSTRATIVNO (demo)
+  surplusNote: 'Višak iznad cilja → Fond „Stari grad Ozalj"',
+  address: '0xOza…7C4', // isti namjenski Safe kao fond Ozalj (prikaz)
+};
+
+// Presets prilagođeni mikrodonacijama — cijeli iznos stiže bez provizije,
+// pa i mali doprinos (5 €) ima smisla, za razliku od kartičnog plaćanja.
+export const solidarityPresets = [5, 10, 25, 50];
+
+// ── Kartična naknada (usporedba) ─────────────────────────────────────────────
+// Stripe EEA domaća kartica: 1,5% + 0,25 € fiksno (činjenično, 2026). Fiksni dio
+// „pojede" mikrodonacije (na 5 € to je 6,5%, na 2 € čak 14%) — ključni razlog
+// zašto on-chain P2P EURe transfer (gas ~0,001 €) pobjeđuje za male iznose.
+export const CARD_FEE_PCT = 0.015;
+export const CARD_FEE_FIXED = 0.25;
+/** Procijenjena kartična naknada za dani iznos (Stripe EEA: 1,5% + 0,25 €). */
+export const cardFee = (n: number) => n * CARD_FEE_PCT + CARD_FEE_FIXED;
+
 // ── Članarina: dvije kategorije ──────────────────────────────────────────────
 // Podupiratelj: 1 €/tjedno (donatorska pretplata).
 // Meštarski zbor: tijelo koje upravlja Družbom (Veliki meštar + 8 meštara) — viši doprinos.
