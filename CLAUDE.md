@@ -117,6 +117,12 @@ P2P → izvan EMT); ulaganje u baštinu = trošak programske djelatnosti (NE gra
   postavlja se u `BistaViewer` (STL nema materijal).
 - **Rotacija zaključana na vertikalu:** OrbitControls `minPolarAngle === maxPolarAngle` (82° = 8° iznad
   horizonta) + `enablePan={false}` → samo azimut (360° lijevo-desno), pogled se ne može okrenuti naglavačke.
+- **Materijali (3 varijante):** bronca · brački kamen · patina (korodirana bronca, verdigris zelena) — jedan
+  `MeshStandardMaterial` (model nema teksture), prijelaz se ANIMIRA lerpanjem color/metalness/roughness u
+  `useFrame` (~1 s, eksponencijalno prigušenje). Swatchevi gore lijevo u vieweru. Deep-link:
+  `?screen=bista&materijal=kamen|patina|bronca` (koristi se i za headless testiranje varijanti).
+- **Fullscreen toggle:** gumb gore desno; nativni Fullscreen API + CSS `position:fixed` overlay fallback za
+  iOS. Fallback je siguran jer na mobitelu nema transformiranog phone framea (desktop uvijek ide nativno).
 - **Standalone verzija komponente:** `/Users/ms/git/dbhz/bista-3d` (Vite + React 18 + R3F 8 + drei 9, iste
   verzije kao wallet) — izolirani razvoj/demo, komponenta `src/BistaViewer.tsx` s propsima
   (elevationDeg/autoRotate/initialDistance/materialColor).
