@@ -6,6 +6,7 @@ export const SCREEN_LABELS: Record<string, string> = {
   clanarina: 'Članarina',
   projekti: 'Fondovi za baštinu',
   nagrade: 'Priznanja · zmajEUR',
+  glasovanje: 'Glasovanje',
   poduzetnici: 'Baština',
   primanja: 'Moj doprinos',
   aktivnost: 'Aktivnost',

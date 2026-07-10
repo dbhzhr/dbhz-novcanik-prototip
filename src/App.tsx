@@ -7,6 +7,7 @@ import { Aktivnost } from './screens/Aktivnost';
 import { Primi } from './screens/Primi';
 import { Projekti } from './screens/Projekti';
 import { Nagrade } from './screens/Nagrade';
+import { Glasovanje } from './screens/Glasovanje';
 import { Poduzetnici } from './screens/Poduzetnici';
 import { Primanja } from './screens/Primanja';
 import { PushReminder } from './components/PushReminder';
@@ -27,13 +28,14 @@ export type Screen =
   | 'clanarina'
   | 'projekti'
   | 'nagrade'
+  | 'glasovanje'
   | 'poduzetnici'
   | 'primanja'
   | 'aktivnost'
   | 'primi'
   | 'bista';
 
-const SCREENS: Screen[] = ['home', 'doniraj', 'clanarina', 'projekti', 'nagrade', 'poduzetnici', 'primanja', 'aktivnost', 'primi', 'bista'];
+const SCREENS: Screen[] = ['home', 'doniraj', 'clanarina', 'projekti', 'nagrade', 'glasovanje', 'poduzetnici', 'primanja', 'aktivnost', 'primi', 'bista'];
 
 /** Deep-link: `?screen=home` uđe izravno na taj ekran (demo + screenshoti). */
 function deepLinkScreen(): Screen | null {
@@ -52,6 +54,7 @@ const TABS: { key: Screen; label: string; icon: string }[] = [
 const MORE_ITEMS: { s: Screen; label: string; desc: string; icon: string }[] = [
   { s: 'clanarina', label: 'Članarina', desc: 'Donatorska pretplata · prepaid', icon: 'M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6' },
   { s: 'nagrade', label: 'Priznanja · zmajEUR', desc: 'Volonterski rad · loyalty priznanja', icon: 'M12 15a7 7 0 100-14 7 7 0 000 14zM8.5 13.5L7 22l5-3 5 3-1.5-8.5' },
+  { s: 'glasovanje', label: 'Glasovanje', desc: 'Odluke Družbe · 1 glas po članu', icon: 'M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11' },
   { s: 'bista', label: 'Bista · 3D', desc: 'Kralj Tomislav · crowdfunding odljeva', icon: 'M3 21h18M5 21V9l7-5 7 5v12M9 21v-7h6v7' },
   { s: 'poduzetnici', label: 'Baština', desc: 'Objekti i projekti · javni registar', icon: 'M22 10L12 5 2 10l10 5 10-5zM6 12v5c0 1 2.7 3 6 3s6-2 6-3v-5' },
   { s: 'primanja', label: 'Moj doprinos', desc: 'Naknade i priznanja od Družbe', icon: 'M12 3v12M8 11l4 4 4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2' },
@@ -129,6 +132,7 @@ export function App() {
         {screen === 'clanarina' && <Clanarina />}
         {screen === 'projekti' && <Projekti />}
         {screen === 'nagrade' && <Nagrade />}
+        {screen === 'glasovanje' && <Glasovanje />}
         {screen === 'poduzetnici' && <Poduzetnici />}
         {screen === 'primanja' && <Primanja go={setScreen} />}
         {screen === 'aktivnost' && <Aktivnost />}
@@ -177,6 +181,7 @@ function DesktopSurround({ navigate }: { navigate: (s: Screen) => void }) {
     { label: 'Članarina', s: 'clanarina' },
     { label: 'Fondovi za baštinu', s: 'projekti' },
     { label: 'Priznanja · zmajEUR', s: 'nagrade' },
+    { label: 'Glasovanje', s: 'glasovanje' },
     { label: 'Bista · 3D', s: 'bista' },
     { label: 'Baština', s: 'poduzetnici' },
     { label: 'Moj doprinos', s: 'primanja' },
@@ -291,6 +296,15 @@ const SCREEN_DOCS: Record<DocKey, { title: string; points: string[] }> = {
       'Bez P2P → izvan MiCA EMT / EMI okvira (loyalty / limited-network exemption).',
       'Otkup zmajEUR→EURe iz fonda za isplate je diskrecijski — granica koja ga drži izvan EMT-a.',
       'Faza 2 (P2P): samo Safe Meštarskog zbora multisig (M-od-N) može otključati, tek uz EMI licencu.',
+    ],
+  },
+  glasovanje: {
+    title: 'Glasovanje · 1 zmaj = 1 glas',
+    points: [
+      'Anti-sybil: passkey identitet + članstvo (membersOnly) — jedan glas po članu, ne po walletu.',
+      'Glas se bilježi onchain; tally je javan i provjerljiv u stvarnom vremenu.',
+      'Nagrada za sudjelovanje je soulbound zmajEUR (priznanje/status), nikad prenosivi novac — sprječava farmanje glasova.',
+      'Savjetodavni signal članstva — formalne odluke donose skupština i Meštarski zbor (Pravila Družbe).',
     ],
   },
   poduzetnici: {

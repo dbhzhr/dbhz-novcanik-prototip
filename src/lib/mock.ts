@@ -379,6 +379,64 @@ export const bistaCampaign = {
   ] as BistaCity[],
 };
 
+// ── Glasovanje (1 zmaj = 1 glas) ─────────────────────────────────────────────
+// Interno glasovanje Družbe: članovi (redoviti zmajevi, numerus clausus 385)
+// odlučuju o prioritetima obnove i članskim pitanjima. Anti-sybil: passkey
+// identitet + `membersOnly` (članstvo). Nagrada za sudjelovanje je SOULBOUND
+// (zmajEUR priznanje), NIKAD prenosivi novac. Teme su apolitične — baština i
+// organizacija. ⚠️ Pitanja i brojevi glasova su ILUSTRATIVNI demo.
+export type PollOption = { id: string; label: string; votes: number };
+export type Poll = {
+  id: string;
+  category: string; // slobodan label kategorije/teme odluke
+  question: string;
+  closesIn: string;
+  totalVotes: number;
+  membersOnly?: boolean; // glas gejtan na članstvo (jača anti-sybil)
+  myVote?: string; // id opcije za koju je korisnik već glasao
+  options: PollOption[];
+};
+export const polls: Poll[] = [
+  {
+    id: 'p-1',
+    category: 'Prioritet obnove',
+    question: 'Koji projekt baštine ima prednost u 2027. godini?',
+    closesIn: 'završava za 3 dana',
+    totalVotes: 212,
+    membersOnly: true,
+    options: [
+      { id: 'a', label: 'Krovište — Stari grad Ozalj', votes: 96 },
+      { id: 'b', label: 'Digitalizacija Arhiva Frankopana', votes: 71 },
+      { id: 'c', label: 'Nova izdanja — „Acta et Studia Draconica"', votes: 45 },
+    ],
+  },
+  {
+    id: 'p-2',
+    category: 'Termin sijela',
+    question: 'Kada održati proljetno sijelo u Viteškoj dvorani?',
+    closesIn: 'završava za 6 dana',
+    totalVotes: 178,
+    myVote: 'b',
+    options: [
+      { id: 'a', label: 'Petak navečer', votes: 74 },
+      { id: 'b', label: 'Subota popodne', votes: 68 },
+      { id: 'c', label: 'Nedjelja popodne', votes: 36 },
+    ],
+  },
+  {
+    id: 'p-3',
+    category: 'Edukacija',
+    question: 'Koji tečaj organizirati u sljedećem ciklusu?',
+    closesIn: 'završava za 9 dana',
+    totalVotes: 141,
+    options: [
+      { id: 'x', label: 'Tečaj glagoljice (novi ciklus)', votes: 62 },
+      { id: 'y', label: 'Heraldika i veksilologija', votes: 47 },
+      { id: 'z', label: 'Paleografija — čitanje starih rukopisa', votes: 32 },
+    ],
+  },
+];
+
 // ── Transparentnost Družbe ───────────────────────────────────────────────────
 // ČINJENICE (dbhz.hr/kontakt + Registar udruga + statut „Ordo Draconicus" 2024.):
 // OIB, IBAN, banka, godina osnutka i obnove, registarski broj, sjedište.
