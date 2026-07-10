@@ -8,7 +8,7 @@
 // roughness). Prijelaz između varijanti se ANIMIRA lerpanjem sva tri parametra u
 // render-petlji. Deep-link: ?screen=bista&materijal=kamen|patina|bronca.
 // Standalone verzija komponente: github.com/stepanic/dbhz-bista-3d
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Center, ContactShadows, useGLTF } from '@react-three/drei';
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
@@ -69,6 +69,36 @@ function Bust({ variant }: { variant: BistaVariant }) {
   return <primitive object={scene} />;
 }
 
+/** Responzivno kadriranje: na svaku promjenu veličine viewporta (fullscreen, rotacija
+ *  ekrana) postavi udaljenost kamere tako da CIJELI model stane i po visini i po širini
+ *  — u uskom portretu horizontalni FOV je uzak pa bi fiksna udaljenost rezala bistu.
+ *  Smjer kamere (azimut + fiksni polarni kut) se ne dira, samo udaljenost. */
+function FitCamera({ subjectRef }: { subjectRef: React.RefObject<THREE.Group> }) {
+  const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
+  const size = useThree((s) => s.size);
+  useEffect(() => {
+    const obj = subjectRef.current;
+    if (!obj) return;
+    const box = new THREE.Box3().setFromObject(obj);
+    if (box.isEmpty()) return;
+    const dims = box.getSize(new THREE.Vector3());
+    const halfH = dims.y / 2;
+    // Horizontalni CIRKUMRADIUS (pola dijagonale XZ) — bista se vrti, pa projicirana
+    // širina na dijagonalnim azimutima doseže dijagonalu boxa, ne samo dims.x.
+    const rXZ = Math.hypot(dims.x, dims.z) / 2;
+    const vTan = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+    const hTan = vTan * (size.width / size.height);
+    // Širina: fit računan na NAJBLIŽOJ plohi modela (dist − rXZ), jer perspektiva
+    // povećava bliže dijelove; visina: klasični fit + blaga kompenzacija dubine
+    // (najviši dio — kruna — je blizu osi rotacije, ne na najbližoj plohi).
+    const distW = rXZ * (1.2 / hTan + 1);
+    const distV = (1.15 * halfH) / vTan + 0.35 * rXZ;
+    camera.position.setLength(Math.max(distV, distW)); // target je ishodište → čuva azimut i polarni kut
+    camera.updateProjectionMatrix();
+  }, [size, camera, subjectRef]);
+  return null;
+}
+
 /** inline = u layoutu · native = Fullscreen API · overlay = CSS fallback (iOS bez API-ja).
  *  Overlay je position:fixed — na mobitelu OK (nema transformiranog phone framea),
  *  na desktopu se nikad ne koristi jer tamo postoji nativni Fullscreen API. */
@@ -78,6 +108,7 @@ export default function BistaViewer() {
   const [variant, setVariant] = useState<BistaVariant>(() => variantFromUrl() ?? 'bronca');
   const [fs, setFs] = useState<FsMode>('inline');
   const wrapRef = useRef<HTMLDivElement>(null);
+  const bustRef = useRef<THREE.Group>(null);
 
   useEffect(() => {
     // Izlaz iz nativnog fullscreena (Escape, gesta) mora sinkronizirati state.
@@ -146,10 +177,14 @@ export default function BistaViewer() {
         <directionalLight position={[-5, 2, -3]} intensity={0.5} color="#ffe6b0" />
         <Suspense fallback={null}>
           {/* Model je već Y-up i geometrijski uspravljen → bez rotacije stoji uspravno */}
-          <Center>
-            <Bust variant={variant} />
-          </Center>
+          <group ref={bustRef}>
+            <Center>
+              <Bust variant={variant} />
+            </Center>
+          </group>
           <ContactShadows position={[0, -1.05, 0]} opacity={0.5} scale={7} blur={2.6} far={3} />
+          {/* Unutar Suspense → mounta se tek kad je model učitan (bbox postoji) */}
+          <FitCamera subjectRef={bustRef} />
         </Suspense>
         <OrbitControls
           enablePan={false}
@@ -160,7 +195,7 @@ export default function BistaViewer() {
           autoRotate
           autoRotateSpeed={0.9}
           minDistance={2.2}
-          maxDistance={6.5}
+          maxDistance={9}
           enableDamping
         />
       </Canvas>
