@@ -26,7 +26,8 @@ CLOUDFLARE_ACCOUNT_ID=7dc7167b7e2e00923bfa7cd697df14e4 \
 - **KV namespace** `FEEDBACK_KV` — id u `wrangler.toml` treba popuniti:
   `wrangler kv namespace create "dbhz-prototip-feedback" --account-id 7dc7167b7e2e00923bfa7cd697df14e4`
   → zapiši id u `[[kv_namespaces]] id = "..."`.
-- **Service worker kešira** — za novu verziju hard refresh / zatvori-otvori PWA. Cache ime `dbhz-novcanik-v1`.
+- **Service worker kešira** — za novu verziju hard refresh / zatvori-otvori PWA. Cache ime `dbhz-novcanik-vN`
+  u `public/sw.js` (trenutno v6) — **bump pri svakom deployu s promjenom shella**.
 
 ## Brand (SSOT: `BRAND.md`)
 
@@ -69,16 +70,24 @@ CLOUDFLARE_ACCOUNT_ID=7dc7167b7e2e00923bfa7cd697df14e4 \
 ## Ekrani i navigacija
 
 - **4 taba** (`TABS` u `App.tsx`): Početna · Doniraj · Fondovi · Aktivnost. Ostalo kroz **„Više"** (`MoreSheet`).
-- **Više sheet:** Članarina, Priznanja·zmajEUR, Baština, Moj doprinos, Primi, Dokumenti.
-- **9 ekrana + onboarding:** home, doniraj, clanarina, projekti, nagrade, poduzetnici (Baština), primanja
-  (Moj doprinos), aktivnost, primi. **Interni screen key `poduzetnici` zadržan** (kao i `edeur` slug) radi
-  deep-linkova/routera; u UI-u piše „Baština".
+- **Više sheet:** Članarina, Priznanja·zmajEUR, Glasovanje, Bista·3D, Baština, Moj doprinos, Primi, Dokumenti.
+- **11 ekrana + onboarding:** home, doniraj, clanarina, projekti, nagrade, glasovanje, poduzetnici (Baština),
+  primanja (Moj doprinos), aktivnost, primi, bista. **Interni screen key `poduzetnici` zadržan** (kao i `edeur`
+  slug) radi deep-linkova/routera; u UI-u piše „Baština".
+- **Doniraj** (backport zef `2042382`): odabir namjene — solidarna kampanja „Obnova krovišta — Stari grad
+  Ozalj" (iznosi ILUSTRATIVNI, progress + demo-inkrement) ili fondovi; fee-usporedba on-chain vs kartica
+  (`cardFee`/`CARD_FEE_*` u mock.ts) + link na `/dokumenti/isplativost`.
+- **Glasovanje** (backport template `8970e19`): interne odluke Družbe, 1 zmaj = 1 glas, soulbound zmajEUR
+  nagrada; apolitične teme (prioritet obnove, termin sijela, tečajevi); formalne odluke → skupština/Meštarski
+  zbor. `polls` u mock.ts, glasovi ilustrativni (≤385 članova).
 - **MoreSheet anchor:** `absolute inset-0` unutar phone framea (frame je `relative`, **nije** transformiran).
 
 ## Dokumenti (compliance)
 
-`/dokumenti`, `/dokumenti/uvjeti-koristenja`, `/dokumenti/edeur`, `/dokumenti/porezi`, `/dokumenti/mogucnosti`
-renderiraju `docs/compliance/*.md` (single source, `?raw` import) s mermaid dijagramima. Prepisani za DBHZ:
+`/dokumenti`, `/dokumenti/isplativost`, `/dokumenti/uvjeti-koristenja`, `/dokumenti/edeur`, `/dokumenti/porezi`,
+`/dokumenti/mogucnosti` renderiraju `docs/compliance/*.md` (single source, `?raw` import) s mermaid dijagramima.
+**Isplativost** (backport zef `65629ef`+`aa9f76c`): novčanik vs kartica/IBAN/humanitarni SMS — DBHZ killer
+argument je tjedna članarina 1 € (fiksni bankovni nalog 0,25–0,40 € = 25–40% troška); iznosi ilustrativni. Prepisani za DBHZ:
 neprofitna udruga → porez kao neprofitna org; zmajEUR = baštinski loyalty (MiCA/PSD2 limited-network, bez
 P2P → izvan EMT); ulaganje u baštinu = trošak programske djelatnosti (NE grant trećoj osobi).
 
@@ -99,6 +108,19 @@ P2P → izvan EMT); ulaganje u baštinu = trošak programske djelatnosti (NE gra
 8. **Edit tool zahtijeva prethodni Read** za rsync-kopirane datoteke.
 9. **Brand tokeni:** `navy` = zelena, `orange` = zlato (imena zadržana). Ne hardkodiraj hex u komponentama
    (ostali su samo progress-bar gradijenti i Logo bg — usklađeni na zelenu/zlato).
+
+## Ikone, PWA splash i OG (backport 2026-07)
+
+- **Lucide ikone** (`lucide-react@^1.21.0`, backport template `90f45da`): SVE ikone kroz
+  `src/components/icons.tsx` — jednobojni `currentColor` (kontejneru daj `text-navy`/`text-orange`),
+  NE emojiji. `sectorIcon` mapa = baštinske kategorije (Castle/Landmark/Archive/Milestone/ScrollText/
+  BookOpen; fallback Shield). Za inline u gumbu: `inline-flex items-center gap-1.5`.
+- **PWA splash:** `python3 scripts/gen_splash.py` (PIL) generira `public/icons/splash/splash-<WxH>.png`
+  (12 iOS dimenzija, grb na zmajsko-zelenoj `#0C5430`) + `public/og-image.png` (1200×630).
+  `apple-touch-startup-image` linkovi + inline `#ios-splash` u `index.html` (uklanja ga `main.tsx` nakon
+  prvog painta; prikazuje se samo u standalone PWA modu).
+- **OG/Twitter:** statični tagovi u `index.html` (single-tenant — NEMA edge middlewarea kao u ss prototipu);
+  slika apsolutni URL `https://dbhz-prototip.pages.dev/og-image.png`. Pri promjeni domene ažuriraj og:url/og:image.
 
 ## 3D bista (crowdfunding feature)
 

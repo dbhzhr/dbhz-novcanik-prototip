@@ -1,6 +1,6 @@
 // Minimalni service worker — čini prototip instalabilnim (PWA) i daje
 // offline app-shell. Cache-first za navigaciju, network-first za ostalo.
-const CACHE = 'dbhz-novcanik-v5';
+const CACHE = 'dbhz-novcanik-v6';
 const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/brand/fingerprint.svg'];
 
 self.addEventListener('install', (e) => {
