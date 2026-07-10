@@ -1,5 +1,6 @@
 import { account, community, edeur, eur, kindLabel, ledger, loyalty } from '../lib/mock';
 import { Amount, Button, Card, Chip, Fingerprint } from '../components/ui';
+import { Award, Landmark } from '../components/icons';
 import type { Screen } from '../App';
 
 export function Home({ go }: { go: (s: Screen) => void }) {
@@ -69,8 +70,8 @@ export function Home({ go }: { go: (s: Screen) => void }) {
             <p className="mt-1 text-lg font-semibold text-navy">{edeur(loyalty.balance)}</p>
             <p className="mt-0.5 text-sm text-muted">zasluženo radom na baštini · zamijeni za EURe →</p>
           </div>
-          <span className="grid h-11 w-11 place-items-center rounded-pill bg-orange/10 text-sm font-bold text-orange">
-            zE
+          <span className="grid h-11 w-11 place-items-center rounded-pill bg-orange/10 text-orange">
+            <Award className="h-5 w-5" aria-hidden />
           </span>
         </Card>
       </button>
@@ -83,7 +84,9 @@ export function Home({ go }: { go: (s: Screen) => void }) {
             <p className="mt-1 text-lg font-semibold text-navy">6 projekata baštine</p>
             <p className="mt-0.5 text-sm text-muted">objekti i projekti · javni registar →</p>
           </div>
-          <span className="grid h-11 w-11 place-items-center rounded-pill bg-navy/10 text-lg" aria-hidden>🐉</span>
+          <span className="grid h-11 w-11 place-items-center rounded-pill bg-navy/10 text-navy">
+            <Landmark className="h-5 w-5" aria-hidden />
+          </span>
         </Card>
       </button>
 
@@ -121,7 +124,7 @@ export function Home({ go }: { go: (s: Screen) => void }) {
           {ledger.slice(0, 3).map((t) => (
             <div key={t.id} className="flex items-center justify-between px-4 py-3">
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-navy-ink">{t.who}</p>
+                <p className="text-sm font-semibold leading-snug text-navy-ink">{t.who}</p>
                 <p className="text-xs text-muted">
                   {kindLabel[t.kind]}
                   {t.recurring ? ' · redovito' : ''}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Button, Fingerprint } from './ui';
+import { Search } from './icons';
 
 export type ConfirmLine = { label: string; value: string };
 
@@ -83,7 +84,7 @@ export function PaymentConfirm({
           </div>
 
           <div className="mt-4 flex items-center gap-2 rounded-card bg-navy/5 px-4 py-3">
-            <span className="text-base">🔎</span>
+            <Search className="h-4 w-4 shrink-0 text-navy" aria-hidden />
             <p className="text-xs leading-relaxed text-muted">
               Zapis javno vidljiv · <span className="tabular-nums">0xa33f…1e7d</span> na Gnosis lancu
             </p>

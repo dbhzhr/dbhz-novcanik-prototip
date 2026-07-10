@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { donationPresets, eur } from '../lib/mock';
 import { Button, Card, ScreenTitle } from '../components/ui';
+import { Search } from '../components/icons';
 
 export function Doniraj() {
   const [amount, setAmount] = useState(30);
@@ -58,7 +59,7 @@ export function Doniraj() {
         </Card>
 
         <div className="flex items-start gap-2 rounded-card bg-navy/5 px-4 py-3">
-          <span className="mt-0.5 text-base">🔎</span>
+          <Search className="mt-0.5 h-4 w-4 shrink-0 text-navy" aria-hidden />
           <p className="text-xs leading-relaxed text-muted">
             <span className="font-semibold text-navy">Potpuna transparentnost.</span> Svaka donacija i svako
             ulaganje u baštinu javno su vidljivi javnosti kroz auditiranu blockchain platformu.
@@ -92,8 +93,8 @@ function Toggle({
         className={`relative h-7 w-12 shrink-0 rounded-pill transition ${on ? 'bg-orange' : 'bg-chipline'}`}
       >
         <span
-          className={`absolute top-0.5 h-6 w-6 rounded-pill bg-white shadow transition-all ${
-            on ? 'left-[1.55rem]' : 'left-0.5'
+          className={`absolute left-0.5 top-0.5 h-6 w-6 rounded-pill bg-white shadow transition-transform ${
+            on ? 'translate-x-5' : 'translate-x-0'
           }`}
         />
       </span>

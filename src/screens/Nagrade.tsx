@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { edeur, eur, loyalty } from '../lib/mock';
 import { Button, Card, FeatureRow, ScreenTitle } from '../components/ui';
+import { FileText } from '../components/icons';
 import { PaymentConfirm } from '../components/PaymentConfirm';
 import { navigate } from '../lib/router';
 
@@ -136,7 +137,7 @@ export function Nagrade() {
             {loyalty.log.map((l) => (
               <div key={l.id} className="flex items-center justify-between px-4 py-3.5">
                 <div className="min-w-0 pr-3">
-                  <p className="truncate text-sm font-semibold text-navy-ink">{l.label}</p>
+                  <p className="text-sm font-semibold leading-snug text-navy-ink">{l.label}</p>
                   <p className="text-xs text-muted">{l.when}</p>
                 </div>
                 <span className="shrink-0 text-sm font-semibold tabular-nums text-navy">+{edeur(l.amount)}</span>
@@ -155,9 +156,9 @@ export function Nagrade() {
           </ul>
           <button
             onClick={() => navigate('/dokumenti/edeur')}
-            className="mt-4 w-full rounded-pill border border-chipline bg-chip py-2.5 text-sm font-semibold text-navy transition hover:border-orange hover:text-orange"
+            className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-pill border border-chipline bg-chip py-2.5 text-sm font-semibold text-navy transition hover:border-orange hover:text-orange"
           >
-            📄 Pročitaj pravno-tehničku bilješku →
+            <FileText className="h-4 w-4" aria-hidden /> Pročitaj pravno-tehničku bilješku →
           </button>
         </Card>
       </div>

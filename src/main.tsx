@@ -22,6 +22,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>,
 );
 
+// Ukloni inline splash (standalone PWA) nakon prvog paint-a React appa.
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => document.getElementById('ios-splash')?.remove());
+});
+
 // Registriraj service worker (PWA instalabilnost + offline app-shell).
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {

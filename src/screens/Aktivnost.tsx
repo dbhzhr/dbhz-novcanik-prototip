@@ -1,5 +1,6 @@
 import { associationBudget, communityStats, community, eur, ledger } from '../lib/mock';
 import { Card, ScreenTitle } from '../components/ui';
+import { FileText } from '../components/icons';
 import { navigate } from '../lib/router';
 
 const kindMeta: Record<string, { label: string; sign: string; color: string }> = {
@@ -62,7 +63,7 @@ export function Aktivnost() {
             return (
               <div key={t.id} className="flex items-center justify-between px-4 py-3.5">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-navy-ink">{t.who}</p>
+                  <p className="text-sm font-semibold leading-snug text-navy-ink">{t.who}</p>
                   <p className="text-xs text-muted">
                     {m.label} · {t.when}
                     {t.recurring ? ' · redovito' : ''}
@@ -86,9 +87,9 @@ export function Aktivnost() {
         </p>
         <button
           onClick={() => navigate('/dokumenti/porezi')}
-          className="mt-3 w-full rounded-pill border border-chipline bg-chip py-2.5 text-sm font-semibold text-navy transition hover:border-orange hover:text-orange"
+          className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-pill border border-chipline bg-chip py-2.5 text-sm font-semibold text-navy transition hover:border-orange hover:text-orange"
         >
-          📄 Kako se vide porezi onchain →
+          <FileText className="h-4 w-4" aria-hidden /> Kako se vide porezi onchain →
         </button>
       </div>
     </div>
@@ -99,7 +100,7 @@ function StatBox({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-hairline p-3">
       <p className="text-[0.7rem] text-muted">{label}</p>
-      <p className="text-lg font-semibold tabular-nums text-navy">{value}</p>
+      <p className="text-base font-semibold tabular-nums tracking-tight text-navy">{value}</p>
     </div>
   );
 }

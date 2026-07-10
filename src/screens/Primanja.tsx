@@ -1,5 +1,6 @@
 import { grantPayouts, edeur, eur, type GrantPayout } from '../lib/mock';
 import { Card, ScreenTitle } from '../components/ui';
+import { Banknote } from '../components/icons';
 import type { Screen } from '../App';
 
 const statusMeta: Record<GrantPayout['status'], { label: string; cls: string }> = {
@@ -46,7 +47,7 @@ export function Primanja({ go }: { go: (s: Screen) => void }) {
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="truncate text-sm font-semibold text-navy-ink">{p.title}</p>
+                    <p className="text-sm font-semibold leading-snug text-navy-ink">{p.title}</p>
                     <span className={`shrink-0 rounded-pill px-2 py-0.5 text-[0.6rem] font-semibold ${sm.cls}`}>
                       {sm.label}
                     </span>
@@ -65,7 +66,7 @@ export function Primanja({ go }: { go: (s: Screen) => void }) {
 
         {/* Zašto kroz novčanik */}
         <div className="flex items-start gap-2 rounded-card bg-navy/5 px-4 py-3">
-          <span className="mt-0.5 text-base" aria-hidden>💶</span>
+          <Banknote className="mt-0.5 h-4 w-4 shrink-0 text-navy" aria-hidden />
           <p className="text-xs leading-relaxed text-muted">
             <span className="font-semibold text-navy">Direktno, transparentno, bez posrednika.</span> Naknade idu
             onchain — bez šaltera, bez uplatnica, bez čekanja. Družba šalje batch isplatu svim volonterima kao jednu

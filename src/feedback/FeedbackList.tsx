@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { navigate } from '../lib/router';
 import { screenLabel } from '../lib/screens';
 import { colorFor, fetchComments, type Comment } from '../lib/feedback';
+import { MessageCircle } from '../components/icons';
 
 function timeAgo(ts: number, now: number) {
   const s = Math.max(0, Math.floor((now - ts) / 1000));
@@ -75,7 +76,7 @@ export default function FeedbackList() {
         {!items && !err && <p className="mt-6 text-muted">Učitavanje…</p>}
         {items && items.length === 0 && (
           <div className="mt-6 rounded-card border border-chipline bg-surface p-6 text-center text-muted">
-            Još nema komentara. Otvori prototip, klikni <span className="font-semibold text-navy">💬 Komentari</span> na bilo kojem ekranu.
+            Još nema komentara. Otvori prototip, klikni <span className="inline-flex items-center gap-1 font-semibold text-navy"><MessageCircle className="h-4 w-4" aria-hidden /> Komentari</span> na bilo kojem ekranu.
           </div>
         )}
 

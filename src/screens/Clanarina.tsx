@@ -135,8 +135,8 @@ export function Clanarina() {
             </div>
             <span className={`relative h-7 w-12 shrink-0 rounded-pill transition ${settle ? 'bg-orange' : 'bg-chipline'}`}>
               <span
-                className={`absolute top-0.5 h-6 w-6 rounded-pill bg-white shadow transition-all ${
-                  settle ? 'left-[1.55rem]' : 'left-0.5'
+                className={`absolute left-0.5 top-0.5 h-6 w-6 rounded-pill bg-white shadow transition-transform ${
+                  settle ? 'translate-x-5' : 'translate-x-0'
                 }`}
               />
             </span>
@@ -163,7 +163,7 @@ export function Clanarina() {
                 <div key={p.id} className="rounded-2xl border border-hairline p-3">
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-navy-ink">{p.name}</p>
+                      <p className="text-sm font-semibold leading-snug text-navy-ink">{p.name}</p>
                       <p className="text-[0.7rem] text-muted">{pct}% prikupljeno · {p.contributors} donatora</p>
                     </div>
                     <div className="flex items-center gap-2">

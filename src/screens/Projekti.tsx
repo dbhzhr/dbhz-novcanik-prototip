@@ -1,5 +1,6 @@
 import { associationBudget, communityStats, eur, projects } from '../lib/mock';
 import { Card, ScreenTitle } from '../components/ui';
+import { Lightbulb } from '../components/icons';
 
 export function Projekti() {
   return (
@@ -83,7 +84,7 @@ export function Projekti() {
 
         {/* Kontekst */}
         <div className="flex items-start gap-2 rounded-card bg-navy/5 px-4 py-3">
-          <span className="mt-0.5 text-base" aria-hidden>💡</span>
+          <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-navy" aria-hidden />
           <p className="text-xs leading-relaxed text-muted">
             <span className="font-semibold text-navy">Transparentnost na lancu.</span> Družba (osnovana{' '}
             {associationBudget.founded}, obnovljena {associationBudget.restored}) u demo prikazu prikupila{' '}

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { navigate } from '../lib/router';
 import { colorFor, fetchComments, type Comment } from '../lib/feedback';
+import { MessageCircle } from './icons';
 
 const NAME_KEY = 'edw_fb_name';
 
@@ -80,7 +81,7 @@ export function FeedbackWidget({ screen, screenLabel }: { screen: string; screen
         onClick={() => setOpen(true)}
         className="absolute bottom-20 right-3 z-30 flex items-center gap-1.5 rounded-pill bg-navy px-4 py-2.5 text-sm font-semibold text-white shadow-card transition hover:bg-navy-deep"
       >
-        💬 Komentari
+        <MessageCircle className="h-4 w-4" aria-hidden /> Komentari
         {thread.length > 0 && (
           <span className="grid h-5 min-w-5 place-items-center rounded-pill bg-orange px-1 text-xs">{thread.length}</span>
         )}
@@ -107,7 +108,7 @@ export function FeedbackWidget({ screen, screenLabel }: { screen: string; screen
 
               {/* Thread (svi vide sve) */}
               <div className="flex-1 space-y-2 overflow-y-auto px-5 py-4">
-                {thread.length === 0 && <p className="py-4 text-center text-sm text-muted">Još nema komentara na ovom ekranu. Budi prvi/a 👇</p>}
+                {thread.length === 0 && <p className="py-4 text-center text-sm text-muted">Još nema komentara na ovom ekranu. Budi prvi/a.</p>}
                 {thread.map((c) => {
                   const col = colorFor(c.name);
                   return (

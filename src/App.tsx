@@ -13,6 +13,7 @@ import { PushReminder } from './components/PushReminder';
 import { navigate as goTo } from './lib/router';
 import { FeedbackWidget } from './components/FeedbackWidget';
 import { ThemeToggle } from './components/ui';
+import { FileText } from './components/icons';
 import { SCREEN_LABELS } from './lib/screens';
 
 const DocsPage = lazy(() => import('./docs/DocsPage'));
@@ -228,7 +229,7 @@ function DesktopSurround({ navigate }: { navigate: (s: Screen) => void }) {
         onClick={() => goTo('/dokumenti')}
         className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-navy-mid transition hover:text-orange"
       >
-        📄 Kako radi · dokumenti i dijagrami →
+        <FileText className="h-4 w-4" aria-hidden /> Kako radi · dokumenti i dijagrami →
       </button>
 
       <p className="mt-8 text-xs leading-relaxed text-muted">
@@ -350,9 +351,9 @@ function DesktopDocs({ screen }: { screen: DocKey }) {
       </ul>
       <button
         onClick={() => goTo('/dokumenti')}
-        className="mt-6 w-full rounded-pill border border-chipline bg-surface px-4 py-2.5 text-sm font-semibold text-navy transition hover:border-orange hover:text-orange"
+        className="mt-6 inline-flex w-full items-center justify-center gap-1.5 rounded-pill border border-chipline bg-surface px-4 py-2.5 text-sm font-semibold text-navy transition hover:border-orange hover:text-orange"
       >
-        📄 Otvori dokumente + dijagrame →
+        <FileText className="h-4 w-4" aria-hidden /> Otvori dokumente + dijagrame →
       </button>
       <p className="mt-3 text-xs leading-relaxed text-muted">
         Uvjeti korištenja + zmajEUR pravno-tehnička bilješka, s renderiranim mermaid dijagramima.
@@ -437,9 +438,9 @@ function MoreSheet({ screen, go, onClose }: { screen: Screen; go: (s: Screen) =>
         </div>
         <button
           onClick={() => goTo('/dokumenti')}
-          className="mx-4 mt-1 block w-[calc(100%-2rem)] rounded-pill border border-chipline bg-chip py-2.5 text-center text-sm font-semibold text-navy transition hover:border-orange hover:text-orange"
+          className="mx-4 mt-1 inline-flex w-[calc(100%-2rem)] items-center justify-center gap-1.5 rounded-pill border border-chipline bg-chip py-2.5 text-center text-sm font-semibold text-navy transition hover:border-orange hover:text-orange"
         >
-          📄 Dokumenti i dijagrami →
+          <FileText className="h-4 w-4" aria-hidden /> Dokumenti i dijagrami →
         </button>
       </div>
     </div>

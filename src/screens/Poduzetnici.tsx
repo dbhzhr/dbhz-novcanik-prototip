@@ -1,19 +1,11 @@
 import { edeur, eur, bastina, type Bastina } from '../lib/mock';
 import { Card, ScreenTitle } from '../components/ui';
+import { Search, Shield, sectorIcon } from '../components/icons';
 import { communityStats } from '../lib/mock';
 
 const statusMeta: Record<Bastina['status'], { label: string; cls: string }> = {
   primljeno: { label: 'Uloženo ✓', cls: 'bg-orange/10 text-orange' },
   'u obradi': { label: 'U pripremi', cls: 'bg-chip text-muted' },
-};
-
-const sectorIcon: Record<string, string> = {
-  'Obnova spomenika': '🏰',
-  'Skrb o spomeniku': '🏛️',
-  Digitalizacija: '💾',
-  'Spomen-obilježje': '🗿',
-  Edukacija: '📜',
-  Izdavaštvo: '📖',
 };
 
 export function Poduzetnici() {
@@ -48,16 +40,16 @@ export function Poduzetnici() {
           <Card className="divide-y divide-hairline">
             {bastina.map((p) => {
               const sm = statusMeta[p.status];
-              const icon = sectorIcon[p.sector] ?? '📦';
+              const Icon = sectorIcon[p.sector] ?? Shield;
               return (
                 <div key={p.id} className="flex items-start gap-3 px-4 py-4">
-                  <div className="mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-chip text-lg">
-                    {icon}
+                  <div className="mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-chip text-navy">
+                    <Icon className="h-5 w-5" aria-hidden />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-navy-ink">{p.name}</p>
+                        <p className="text-sm font-semibold leading-snug text-navy-ink">{p.name}</p>
                         <p className="mt-0.5 text-xs text-muted">{p.project}</p>
                         <p className="mt-0.5 text-[0.7rem] text-muted">
                           {p.location} · {p.sector}
@@ -83,7 +75,7 @@ export function Poduzetnici() {
 
         {/* Kako radi */}
         <div className="flex items-start gap-2 rounded-card bg-navy/5 px-4 py-3.5">
-          <span className="mt-0.5 text-base" aria-hidden>🔍</span>
+          <Search className="mt-0.5 h-4 w-4 shrink-0 text-navy" aria-hidden />
           <p className="text-xs leading-relaxed text-muted">
             <span className="font-semibold text-navy">Svako ulaganje je onchain.</span> Družba ulaže sredstva u obnovu
             i očuvanje baštine kao EURe transfer na namjenski Safe — javno vidljivo, nepromjenjivo, auditabilno.
@@ -113,7 +105,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl bg-chip p-3">
       <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">{label}</p>
-      <p className="mt-1 text-base font-semibold tabular-nums text-navy">{value}</p>
+      <p className="mt-1 text-base font-semibold tabular-nums tracking-tight text-navy">{value}</p>
     </div>
   );
 }
