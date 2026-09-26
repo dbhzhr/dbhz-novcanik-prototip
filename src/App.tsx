@@ -259,6 +259,7 @@ const SCREEN_DOCS: Record<DocKey, { title: string; points: string[] }> = {
       'Safe (pametni ugovor) na Gnosisu u vlasništvu passkeya; Družba nema pristup sredstvima.',
       'Bez seed-a i lozinki — WebAuthn passkey (Face ID/Touch ID), ključ u Apple/Google Keychainu.',
       'Adresa je counterfactual (CREATE2); Safe se deploya pri prvoj transakciji (MultiSend).',
+      'Nema oporavka preko Družbe: pristup čuvaju drugi passkey na novom uređaju ili seed kao drugi vlasnik Safea.',
     ],
   },
   home: {
@@ -274,7 +275,8 @@ const SCREEN_DOCS: Record<DocKey, { title: string; points: string[] }> = {
     points: [
       'Donacija = EURe transfer na namjenski Safe fonda za baštinu; bez provizija i posrednika.',
       'Anonimno po defaultu (GDPR); javno ime samo uz izričitu opt-in privolu.',
-      'Redovita donacija = prepaid (jedna passkey potvrda za N tjedana, set & forget).',
+      'Redovita donacija = prepaid (jedna passkey potvrda za N tjedana).',
+      'Solidarna kampanja ide na namjenski M-od-N Safe; isplata izvođaču samo na odobreni račun.',
     ],
   },
   clanarina: {
@@ -291,6 +293,7 @@ const SCREEN_DOCS: Record<DocKey, { title: string; points: string[] }> = {
       'Svaki fond = zaseban namjenski Safe (Opći, Stari grad Ozalj, Digitalizacija, Izdavaštvo).',
       'Donator sam usmjerava donaciju na fond — transparentno i auditabilno.',
       'Iznosi fondova javni onchain; Družba sredstva troši na obnovu i očuvanje baštine.',
+      'Fond je M-od-N Safe Meštarskog zbora; isplata samo na unaprijed odobrene račune (whitelist, fail-closed) — promjena popisa je multisig odluka.',
     ],
   },
   nagrade: {
@@ -349,6 +352,7 @@ const SCREEN_DOCS: Record<DocKey, { title: string; points: string[] }> = {
       '3D model (glTF/GLB ~1,4 MB, decimiran s 300k na 80k trokuta) renderiran u three.js / React Three Fiber — lazy chunk.',
       'Prihodovni model: doprinosi u EURe za odljev (bronca/kamen) i postavljanje bisti po gradovima.',
       'Donator u 3D-u vidi što će se stvarno izraditi — emocija prije odljeva. Iznosi i atribucija ilustrativni za demo.',
+      'Kampanjski Safe je M-od-N (Meštarski zbor), nikad samo jedan passkey — lekcija iz stvarnog incidenta u DOMOVINA Wallet stacku, gdje su sredstva ostala zarobljena.',
     ],
   },
 };

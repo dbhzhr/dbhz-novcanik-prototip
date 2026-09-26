@@ -31,8 +31,11 @@ CLOUDFLARE_ACCOUNT_ID=7dc7167b7e2e00923bfa7cd697df14e4 \
   Nakon dodavanja CNAME-a domena ostaje `pending` („CNAME record not set“) dok se ne pokrene ponovna validacija:
   `PATCH …/pages/projects/dbhz-prototip/domains/<domena>` → `active` za ~1–2 min. Ako si domenu `dig`-ao prije
   nego je zapis postojao, macOS/Chrome pamte NXDOMAIN — provjeri s `curl --resolve <domena>:443:<IP>`.
-- **Service worker kešira** — za novu verziju hard refresh / zatvori-otvori PWA. Cache ime `dbhz-novcanik-vN`
-  u `public/sw.js` (trenutno v7) — **bump pri svakom deployu s promjenom shella**.
+- **Service worker + UpdateBanner** (backport pay.domovina.ai, 2026-09-26): nova verzija SW-a ČEKA (`waiting`),
+  `main.tsx` je otkrije (pri učitavanju, na povratak u tab, svakih 30 min) i prikaže banner „nova verzija” →
+  `SKIP_WAITING` → jedan reload. Prva instalacija se aktivira odmah. Cache ime `dbhz-novcanik-vN` u `public/sw.js`
+  (trenutno v8) — **bump pri svakom deployu s promjenom shella** (bump je ono što okida banner).
+  SW nikad ne kešira HTML za ne-navigacijski zahtjev (CF Pages vraća index.html 200 za nepostojeći asset).
 
 ## Sigurnost (revizija 2026-09-26)
 
@@ -104,11 +107,18 @@ CLOUDFLARE_ACCOUNT_ID=7dc7167b7e2e00923bfa7cd697df14e4 \
 ## Dokumenti (compliance)
 
 `/dokumenti`, `/dokumenti/isplativost`, `/dokumenti/uvjeti-koristenja`, `/dokumenti/edeur`, `/dokumenti/porezi`,
-`/dokumenti/mogucnosti` renderiraju `docs/compliance/*.md` (single source, `?raw` import) s mermaid dijagramima.
+`/dokumenti/mogucnosti`, `/dokumenti/sigurnost`, `/dokumenti/plan-razvoja` renderiraju `docs/compliance/*.md` (single source, `?raw` import) s mermaid dijagramima.
 **Isplativost** (backport zef `65629ef`+`aa9f76c`): novčanik vs kartica/IBAN/humanitarni SMS — DBHZ killer
 argument je tjedna članarina 1 € (fiksni bankovni nalog 0,25–0,40 € = 25–40% troška); iznosi ilustrativni. Prepisani za DBHZ:
 neprofitna udruga → porez kao neprofitna org; zmajEUR = baštinski loyalty (MiCA/PSD2 limited-network, bez
 P2P → izvan EMT); ulaganje u baštinu = trošak programske djelatnosti (NE grant trećoj osobi).
+
+**Backport 2 (2026-09-26, `docs/BACKPORT-PLAN.md`):** `sigurnost-i-skrbnistvo.md` (model skrbništva, ADR 0001/0008/
+0012/0016, postmortem 0001 → kampanjski/fondovski Safe UVIJEK M-od-N Meštarskog zbora, whitelist isplata) i
+`plan-razvoja.md` (metodologija e-dem ROADMAP-a za DBHZ). Primjer praga u svim dokumentima: **5-od-9** (većina
+Meštarskog zbora), uvijek označen kao ilustrativan. Relativne `./*.md` poveznice DocsPage prepisuje u rute
+(`FILE_TO_SLUG`) — novi dokument dodaj i tamo. Dijagram s `%% smjer: fiksan` ne prepisuje se LR↔TB (dva stupca
+nepovezanih čvorova bi u TB pala u preširok red); dva nepovezana subgrapha u TB slaži s `A ~~~ B`.
 
 ## Gotchas (naučeno teško — ne ponavljaj)
 
@@ -124,7 +134,7 @@ P2P → izvan EMT); ulaganje u baštinu = trošak programske djelatnosti (NE gra
    `content="…"` (index.html) ili `sub="…"` (JSX) **lomi parser** — koristi `”` (U+201D) ili `{'…'}`.
 4. **Tailwind opacity** (`bg-navy/10`) radi samo jer su varijable RGB kanali (`12 84 48`), ne hex.
 5. **MoreSheet** ne smije `position:fixed` unutar transformiranog framea — `absolute inset-0`.
-6. **CF Pages SW keš:** hard refresh nakon deploya; pri rebrandu promijeni `CACHE` ime u `public/sw.js`.
+6. **CF Pages SW keš:** bump `CACHE` u `public/sw.js` → korisnik dobije UpdateBanner; pri rebrandu promijeni ime.
 7. **PWA preview origin:** stari SW s prethodnog prototipa na istom `localhost` portu servira tuđi app-shell
    iz keša — za screenshote koristi svjež port (npr. 4199), ne 4173.
 8. **Edit tool zahtijeva prethodni Read** za rsync-kopirane datoteke.

@@ -138,8 +138,11 @@ function useIsDesktop() {
   return d;
 }
 
-/** Prepiše SAMO smjer na vrhu dijagrama (flowchart/graph); subgraph `direction` ostaje. */
+/** Prepiše SAMO smjer na vrhu dijagrama (flowchart/graph); subgraph `direction` ostaje.
+ *  Dijagram s komentarom `%% smjer: fiksan` zadržava svoj smjer (npr. dva stupca nepovezanih
+ *  čvorova — u TB bi svi pali u jedan preširok red). */
 function withDirection(code: string, dir: 'LR' | 'TB') {
+  if (code.includes('%% smjer: fiksan')) return code;
   return code.replace(/\b(flowchart|graph)\s+(TB|TD|BT|RL|LR)/, `$1 ${dir}`);
 }
 

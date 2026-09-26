@@ -131,6 +131,7 @@ flowchart TB
         B2 -->|"jedan ključ izgubljen"| B3["Ostali potpisuju<br/>zamjenu ključa"]
         B2 -->|"jedan meštar sam"| B4["Ne može isplatiti"]
     end
+    LOSE ~~~ WIN
     classDef leak fill:#fdecea,stroke:#d64d3f,stroke-width:2px,color:#7a271a;
     classDef win fill:#e6f4ea,stroke:#1e8e5a,stroke-width:2px,color:#14532d;
     class A1,A2,A3 leak;

@@ -27,7 +27,8 @@ DBHZ novčanik je **dizajnerski prototip**: 11 ekrana + onboarding, sve na **moc
 Razvoj ne kreće od nule. Funkcionalni DOMOVINA Wallet (`pay.domovina.ai`, dio `wallet/`) već ima jezgru koju prototip samo simulira. Ocjene složenosti u §3 **pretpostavljaju ponovnu upotrebu te jezgre**; bez nje svaka ocjena raste za ~30–40 bodova (procjena).
 
 ```mermaid
-flowchart TB
+flowchart LR
+  %% smjer: fiksan — dva stupca (postoji → novo) čitljiva i na mobitelu
   subgraph JEZGRA["Postoji u pay.domovina.ai"]
     J1["Passkey + Safe<br/>na Gnosisu"]
     J2["Recovery seed<br/>drugi vlasnik 1-od-2"]

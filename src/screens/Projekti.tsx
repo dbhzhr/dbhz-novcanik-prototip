@@ -1,6 +1,7 @@
 import { associationBudget, communityStats, eur, projects } from '../lib/mock';
 import { Card, ScreenTitle } from '../components/ui';
-import { Lightbulb } from '../components/icons';
+import { Lightbulb, Shield } from '../components/icons';
+import { navigate } from '../lib/router';
 
 export function Projekti() {
   return (
@@ -51,6 +52,38 @@ export function Projekti() {
             </Card>
           );
         })}
+
+        {/* Zaštita fondova — backport ADR 0016 (whitelist isplata) + postmortem 0001 (kampanjski Safe M-od-N) */}
+        <Card className="p-5">
+          <div className="flex items-start gap-3">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-pill bg-navy/10 text-navy">
+              <Shield className="h-4 w-4" aria-hidden />
+            </span>
+            <div className="min-w-0">
+              <p className="font-semibold text-navy">Kako su fondovi zaštićeni</p>
+              <ul className="mt-2 space-y-1.5 text-sm leading-snug text-muted">
+                <li>
+                  <span className="font-semibold text-navy-ink">Više potpisa.</span> Svaki fond je Safe Meštarskog zbora
+                  (M-od-N) — nijedna osoba ni jedan uređaj sam ne može pomaknuti sredstva.
+                </li>
+                <li>
+                  <span className="font-semibold text-navy-ink">Isplate samo na odobrene račune.</span> Novac iz fonda može
+                  otići samo na unaprijed odobrene račune (izvođači radova, Družba); sve ostalo se odbija.
+                </li>
+                <li>
+                  <span className="font-semibold text-navy-ink">Promjene su javne.</span> Novi račun na popisu traži odluku
+                  više potpisnika i vidljiv je na lancu.
+                </li>
+              </ul>
+              <button
+                onClick={() => navigate('/dokumenti/sigurnost')}
+                className="mt-3 text-sm font-semibold text-navy-mid transition hover:text-orange"
+              >
+                Sigurnost i skrbništvo →
+              </button>
+            </div>
+          </div>
+        </Card>
 
         {/* Statistike ulaganja */}
         <div className="pt-3">
