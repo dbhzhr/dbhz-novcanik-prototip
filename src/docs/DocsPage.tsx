@@ -9,6 +9,8 @@ import uvjetiMd from '../../docs/compliance/uvjeti-koristenja-novcanika.md?raw';
 import edeurMd from '../../docs/compliance/edeur-loyalty-token.md?raw';
 import poreziMd from '../../docs/compliance/porezi-i-transparentnost.md?raw';
 import mogucnostiMd from '../../docs/compliance/razmatrane-mogucnosti.md?raw';
+import sigurnostMd from '../../docs/compliance/sigurnost-i-skrbnistvo.md?raw';
+import planMd from '../../docs/compliance/plan-razvoja.md?raw';
 
 mermaid.initialize({
   startOnLoad: false,
@@ -68,11 +70,23 @@ const DOCS: Record<string, { slug: string; title: string; blurb: string; md: str
     blurb: 'Zašto je zmajEUR loyalty (bez EMI licence) i kako kroz multisig postaje regulirani token.',
     md: edeurMd,
   },
+  sigurnost: {
+    slug: 'sigurnost',
+    title: 'Sigurnost i skrbništvo',
+    blurb: 'Tko drži ključeve: sredstva su u Safeu člana, Družba ih ne može pomaknuti. Novi mobitel, kampanjski Safe s više potpisa i isplate samo na odobrene račune.',
+    md: sigurnostMd,
+  },
   porezi: {
     slug: 'porezi',
     title: 'Porezi i transparentnost',
     blurb: 'Tok novca na javnom lancu i porezne točke — najprijateljskije za Poreznu upravu (uvid onchain).',
     md: poreziMd,
+  },
+  'plan-razvoja': {
+    slug: 'plan-razvoja',
+    title: 'Plan razvoja — od prototipa do novčanika',
+    blurb: 'Etape od pilota s Meštarskim zborom do otvaranja članstvu: ocjena vrijednosti i složenosti, preduvjeti, rizici i što se preuzima iz postojećeg DOMOVINA novčanika.',
+    md: planMd,
   },
   mogucnosti: {
     slug: 'mogucnosti',
@@ -81,6 +95,22 @@ const DOCS: Record<string, { slug: string; title: string; blurb: string; md: str
     md: mogucnostiMd,
   },
 };
+
+// Relativne poveznice među dokumentima (`./edeur-loyalty-token.md`) → ruta u appu.
+const FILE_TO_SLUG: Record<string, string> = {
+  'isplativost-wallet.md': 'isplativost',
+  'uvjeti-koristenja-novcanika.md': 'uvjeti-koristenja',
+  'edeur-loyalty-token.md': 'edeur',
+  'sigurnost-i-skrbnistvo.md': 'sigurnost',
+  'porezi-i-transparentnost.md': 'porezi',
+  'plan-razvoja.md': 'plan-razvoja',
+  'razmatrane-mogucnosti.md': 'mogucnosti',
+};
+function rewriteDocLinks(html: string) {
+  return html.replace(/href="\.\/([a-z0-9-]+\.md)(#[^"]*)?"/g, (m, file: string, hash = '') =>
+    FILE_TO_SLUG[file] ? `href="/dokumenti/${FILE_TO_SLUG[file]}${hash}"` : m,
+  );
+}
 
 function splitDoc(md: string): { type: 'md' | 'mermaid'; content: string }[] {
   const parts: { type: 'md' | 'mermaid'; content: string }[] = [];
@@ -137,13 +167,21 @@ function Diagram({ code }: { code: string }) {
 
 function Article({ md }: { md: string }) {
   const parts = splitDoc(md);
+  // Interne poveznice kroz klijentski router (bez punog reloada)
+  const onClick = (e: React.MouseEvent) => {
+    const a = (e.target as HTMLElement).closest('a');
+    const href = a?.getAttribute('href');
+    if (!href?.startsWith('/dokumenti') || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    navigate(href);
+  };
   return (
-    <article>
+    <article onClick={onClick}>
       {parts.map((p, i) =>
         p.type === 'mermaid' ? (
           <Diagram key={i} code={p.content} />
         ) : (
-          <div key={i} className="doc-content" dangerouslySetInnerHTML={{ __html: marked.parse(p.content) as string }} />
+          <div key={i} className="doc-content" dangerouslySetInnerHTML={{ __html: rewriteDocLinks(marked.parse(p.content) as string) }} />
         ),
       )}
     </article>
