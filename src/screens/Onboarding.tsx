@@ -25,7 +25,7 @@ export function Onboarding({ onEnter }: { onEnter: () => void }) {
         <h1 className="mt-2 text-[2.1rem] leading-[1.02]">
           Družba „Braća
           <br />
-          Hrvatskoga Zmaja"
+          Hrvatskoga Zmajaâ
         </h1>
         <p className="mt-3 text-sm font-semibold text-navy-mid">Pro aris et focis, Deo propitio!</p>
         <p className="mt-3 text-[0.98rem] leading-relaxed text-muted">
@@ -52,7 +52,7 @@ export function Onboarding({ onEnter }: { onEnter: () => void }) {
         <p className="text-center text-xs leading-relaxed text-muted">
           Identitet čuva Face ID i Apple Keychain.
           <br />
-          Družba „Braća Hrvatskoga Zmaja" · interaktivni prototip
+          Družba „Braća Hrvatskoga Zmaja” · interaktivni prototip
         </p>
       </div>
     </div>

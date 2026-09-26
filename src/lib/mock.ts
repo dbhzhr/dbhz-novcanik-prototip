@@ -1,7 +1,7 @@
 // Mock podaci za design prototip (Faza 1). Nema onchain logike — sve je lažno.
-// Sadržaj utemeljen na ČINJENIČNOM researchu o Družbi „Braća Hrvatskoga Zmaja"
+// Sadržaj utemeljen na ČINJENIČNOM researchu o Družbi „Braća Hrvatskoga Zmaja”
 // (dbhz.hr + Registar udruga + enciklopedijski izvori, provjereno 2026-06).
-// Provjerene činjenice označene su komentarom „ČINJENICA"; neobjavljeni iznosi su
+// Provjerene činjenice označene su komentarom „ČINJENICA”; neobjavljeni iznosi su
 // jasno označeni kao ILUSTRATIVNI demo (Družba ne objavljuje financijske brojke).
 
 export const eur = (n: number) =>
@@ -44,16 +44,6 @@ export const ledger: Tx[] = [
   { id: 't7', kind: 'clanarina', who: 'Darko P.', amount: 1, when: 'pon, 08:00', recurring: true },
 ];
 
-// Javni agregat zajednice (za "transparentnost" karticu).
-// activeMembers: ČINJENICA — Pravila 2024. propisuju numerus clausus od 385 redovitih
-// članova (zmajeva). Prikupljeni/ciljani iznosi su ILUSTRATIVNI demo (nisu objavljeni).
-export const community = {
-  totalRaised: 24800, // € — ILUSTRATIVNO (demo)
-  activeMembers: 385, // ČINJENICA: numerus clausus redovitih članova (Pravila 2024)
-  goal: 40000, // € — ILUSTRATIVNO (demo)
-  goalLabel: 'Obnova i očuvanje baštine — 2026.',
-};
-
 export const donationPresets = [10, 30, 50];
 
 // ── Solidarna kampanja: obnova krovišta Starog grada Ozlja ───────────────────
@@ -66,11 +56,11 @@ export const solidarity = {
   eyebrow: 'Solidarna kampanja',
   title: 'Obnova krovišta — Stari grad Ozalj',
   story:
-    'Krovište dvorca Ozalj traži sanaciju kako oborine ne bi oštetile već obnovljene dijelove i građu koju dvorac čuva. Družba obnavlja Stari grad Ozalj od 2006. — svaki doprinos ide izravno na namjenski račun kampanje. Sredstva prikupljena iznad cilja prelijevaju se u trajni Fond „Stari grad Ozalj".',
+    'Krovište dvorca Ozalj traži sanaciju kako oborine ne bi oštetile već obnovljene dijelove i građu koju dvorac čuva. Družba obnavlja Stari grad Ozalj od 2006. — svaki doprinos ide izravno na namjenski račun kampanje. Sredstva prikupljena iznad cilja prelijevaju se u trajni Fond „Stari grad Ozalj”.',
   goal: 12000, // € — ILUSTRATIVNO (demo)
   raised: 7350, // € — ILUSTRATIVNO (demo)
   donors: 96, // ILUSTRATIVNO (demo)
-  surplusNote: 'Višak iznad cilja → Fond „Stari grad Ozalj"',
+  surplusNote: 'Višak iznad cilja → Fond „Stari grad Ozalj”',
   address: '0xOza…7C4', // isti namjenski Safe kao fond Ozalj (prikaz)
 };
 
@@ -80,7 +70,7 @@ export const solidarityPresets = [5, 10, 25, 50];
 
 // ── Kartična naknada (usporedba) ─────────────────────────────────────────────
 // Stripe EEA domaća kartica: 1,5% + 0,25 € fiksno (činjenično, 2026). Fiksni dio
-// „pojede" mikrodonacije (na 5 € to je 6,5%, na 2 € čak 14%) — ključni razlog
+// „pojede” mikrodonacije (na 5 € to je 6,5%, na 2 € čak 14%) — ključni razlog
 // zašto on-chain P2P EURe transfer (gas ~0,001 €) pobjeđuje za male iznose.
 export const CARD_FEE_PCT = 0.015;
 export const CARD_FEE_FIXED = 0.25;
@@ -88,8 +78,9 @@ export const CARD_FEE_FIXED = 0.25;
 export const cardFee = (n: number) => n * CARD_FEE_PCT + CARD_FEE_FIXED;
 
 // ── Članarina: dvije kategorije ──────────────────────────────────────────────
-// Podupiratelj: 1 €/tjedno (donatorska pretplata).
-// Meštarski zbor: tijelo koje upravlja Družbom (Veliki meštar + 8 meštara) — viši doprinos.
+// Podupiratelj: 1 €/tjedno (donatorska pretplata, otvorena svima).
+// Redoviti član (zmaj): članarina člana Družbe (numerus clausus 385) — iznos ILUSTRATIVAN
+// (Družba ne objavljuje visinu članarine). Interni ključ `uo` zadržan iz predloška.
 export type TierKey = 'redovni' | 'uo';
 export const tiers: Record<
   TierKey,
@@ -97,7 +88,7 @@ export const tiers: Record<
     key: TierKey;
     label: string;
     rate: number;
-    adverb: string; // "tjedno" | "dnevno"
+    adverb: string; // "tjedno" | "mjesečno"
     unit: [string, string, string]; // hrvatska množina: 1 / 2-4 / 5+
     periodDays: number;
     presets: number[];
@@ -116,13 +107,13 @@ export const tiers: Record<
   },
   uo: {
     key: 'uo',
-    label: 'Meštarski zbor',
-    rate: 3,
-    adverb: 'dnevno',
-    unit: ['dan', 'dana', 'dana'],
-    periodDays: 1,
-    presets: [7, 30, 90],
-    owed: 3,
+    label: 'Redoviti član',
+    rate: 5, // € mjesečno — ILUSTRATIVNO
+    adverb: 'mjesečno',
+    unit: ['mjesec', 'mjeseca', 'mjeseci'],
+    periodDays: 30,
+    presets: [3, 6, 12],
+    owed: 2,
   },
 };
 
@@ -162,7 +153,7 @@ export const projects: Project[] = [
   },
   {
     id: 'ozalj',
-    name: 'Fond „Stari grad Ozalj"',
+    name: 'Fond „Stari grad Ozalj”',
     desc: 'Obnova dvorca Ozalj — krovište i pročelja (obnova u tijeku od 2006.)',
     raised: 9840,
     goal: 16000,
@@ -181,7 +172,7 @@ export const projects: Project[] = [
   {
     id: 'izdavastvo',
     name: 'Fond izdavaštva',
-    desc: 'Glasilo „Zmajske vijesti" i biblioteka „Acta et Studia Draconica"',
+    desc: 'Glasilo „Zmajske vijesti” i biblioteka „Acta et Studia Draconica”',
     raised: 2980,
     goal: 5000,
     contributors: 96,
@@ -193,7 +184,7 @@ export const projects: Project[] = [
 // Ne-prenosiv (soulbound) — izdaje samo Družba kao potvrdu volonterskog rada na
 // baštini; iz fonda može se zamijeniti za EURe. Bez P2P → izvan EMT/EMI okvira.
 // Interni identifikator/slug `edeur` i datoteka `edeur-loyalty-token.md` ostaju;
-// u UI-u se prikazuje kao „zmajEUR".
+// u UI-u se prikazuje kao „zmajEUR”.
 export const loyalty = {
   balance: 12, // zmajEUR
   fundAvailable: 960, // EURe dostupno u fondu za isplate
@@ -282,8 +273,8 @@ export const bastina: Bastina[] = [
   },
   {
     id: 'b6',
-    name: 'Glasilo „Zmajske vijesti"',
-    project: 'Izdavanje glasila i biblioteke „Acta et Studia Draconica"',
+    name: 'Glasilo „Zmajske vijesti”',
+    project: 'Izdavanje glasila i biblioteke „Acta et Studia Draconica”',
     location: 'Zagreb',
     amount: 2980,
     date: 'redovito',
@@ -293,8 +284,30 @@ export const bastina: Bastina[] = [
   },
 ];
 
+// ── Izvedeni agregati (jedan izvor istine za sve ekrane) ─────────────────────
+// Svi zbrojevi računaju se iz gornjih nizova, pa Početna, Fondovi, Baština i Aktivnost
+// uvijek prikazuju iste brojke. ⚠️ Iznosi su ILUSTRATIVNI demo.
+const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
+const investedProjects = bastina.filter((b) => b.status === 'primljeno');
+/** Uloženo u baštinu = projekti sa statusom „primljeno” (projekti u pripremi još nisu isplaćeni). */
+export const investedInHeritage = sum(investedProjects.map((b) => b.amount));
+/** Trenutno stanje namjenskih fondova (još neuloženo). */
+export const fundBalances = sum(projects.map((p) => p.raised));
+/** Ukupno prikupljeno = već uloženo + ono što je još u fondovima. */
+export const totalRaised = investedInHeritage + fundBalances;
+
+// Javni agregat zajednice (za "transparentnost" karticu).
+// membersMax: ČINJENICA — Pravila 2024. propisuju numerus clausus od 385 redovitih
+// članova (zmajeva); to je GORNJA granica, ne trenutni broj članova.
+export const community = {
+  totalRaised, // € — ILUSTRATIVNO (izvedeno)
+  membersMax: 385, // ČINJENICA: numerus clausus redovitih članova (Pravila 2024)
+  goal: 60000, // € — ILUSTRATIVNO (demo)
+  goalLabel: 'Obnova i očuvanje baštine — 2026.',
+};
+
 // ── Moj doprinos: osobna strana za volontera-zmaja ────────────────────────────
-// Prikazuje se u screen "primanja" („Moj doprinos"). Demo persona: volonter na baštini.
+// Prikazuje se u screen "primanja" („Moj doprinos”). Demo persona: volonter na baštini.
 export type GrantPayout = {
   id: string;
   title: string;
@@ -315,7 +328,7 @@ export const grantPayouts: GrantPayout[] = [
     currency: 'eur',
     cadence: 'jednokratno',
     status: 'primljeno',
-    source: 'Družba „Braća Hrvatskoga Zmaja" · Fond „Stari grad Ozalj"',
+    source: 'Družba „Braća Hrvatskoga Zmaja” · Fond „Stari grad Ozalj”',
     screen: 'poduzetnici',
   },
   {
@@ -326,7 +339,7 @@ export const grantPayouts: GrantPayout[] = [
     currency: 'edeur',
     cadence: 'jednokratno',
     status: 'primljeno',
-    source: 'Družba „Braća Hrvatskoga Zmaja" · zmajEUR program',
+    source: 'Družba „Braća Hrvatskoga Zmaja” · zmajEUR program',
   },
 ];
 
@@ -336,13 +349,14 @@ export const grantPayouts: GrantPayout[] = [
 // ⚠️ Financijski/projektni agregati NISU javno objavljeni → ILUSTRATIVNE demo projekcije
 // koje pokazuju KAKO bi prikaz izgledao onchain, ne službene brojke Družbe.
 export const communityStats = {
-  investedInHeritage: 27300, // € — ILUSTRATIVNO (zbroj prikazanih demo ulaganja)
-  heritageProjects: 6, // broj prikazanih objekata/projekata baštine u registru (demo)
+  investedInHeritage, // € — ILUSTRATIVNO (zbroj uloženih demo projekata)
+  heritageProjects: bastina.length, // broj prikazanih objekata/projekata baštine u registru (demo)
+  investedProjects: investedProjects.length,
   membersMax: 385, // ČINJENICA: numerus clausus redovitih članova (Pravila 2024)
   zmajskiStolovi: 24, // ČINJENICA: 19 u Hrvatskoj + 5 inozemnih (dbhz.hr)
   volunteerHours: 1240, // ILUSTRATIVNO (demo projekcija)
   edeurInCirculation: 2840, // ILUSTRATIVNO — zmajEUR je konceptualni prototip token
-  avgInvestment: 4550, // ILUSTRATIVNO — usklađeno: 27300 / 6 prikazanih projekata
+  avgInvestment: Math.round(investedInHeritage / investedProjects.length), // ILUSTRATIVNO — po uloženom projektu
 };
 
 // ── Bista kralja Tomislava: 3D crowdfunding kampanja ─────────────────────────
@@ -407,7 +421,7 @@ export const polls: Poll[] = [
     options: [
       { id: 'a', label: 'Krovište — Stari grad Ozalj', votes: 96 },
       { id: 'b', label: 'Digitalizacija Arhiva Frankopana', votes: 71 },
-      { id: 'c', label: 'Nova izdanja — „Acta et Studia Draconica"', votes: 45 },
+      { id: 'c', label: 'Nova izdanja — „Acta et Studia Draconica”', votes: 45 },
     ],
   },
   {
@@ -438,16 +452,16 @@ export const polls: Poll[] = [
 ];
 
 // ── Transparentnost Družbe ───────────────────────────────────────────────────
-// ČINJENICE (dbhz.hr/kontakt + Registar udruga + statut „Ordo Draconicus" 2024.):
+// ČINJENICE (dbhz.hr/kontakt + Registar udruga + statut „Ordo Draconicus” 2024.):
 // OIB, IBAN, banka, godina osnutka i obnove, registarski broj, sjedište.
 // Prikupljeni/uloženi/rezervni iznosi su ILUSTRATIVNI demo.
 export const associationBudget = {
   year: 2025,
   founded: '16.11.1905.', // ČINJENICA: osnovana u Zagrebu
   restored: '23.06.1990.', // ČINJENICA: obnovljena nakon zabrane 1946.
-  totalRaised: 24800, // € prikupljeno — ILUSTRATIVNO (demo)
-  totalInvested: 27300, // € uloženo u baštinu — ILUSTRATIVNO (demo)
-  reserves: 6120, // € rezerva u fondu — ILUSTRATIVNO (demo)
+  totalRaised, // € prikupljeno — ILUSTRATIVNO (izvedeno: uloženo + stanje fondova)
+  totalInvested: investedInHeritage, // € uloženo u baštinu — ILUSTRATIVNO (izvedeno)
+  reserves: fundBalances, // € još u namjenskim fondovima — ILUSTRATIVNO (izvedeno)
   transparencyNote: 'Sve transakcije onchain, javno auditabilne na Gnosisu.',
   oib: '78879984090', // ČINJENICA (dbhz.hr/kontakt)
   iban: 'HR8923400091100055160', // ČINJENICA (dbhz.hr/kontakt)

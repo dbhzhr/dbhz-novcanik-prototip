@@ -14,7 +14,7 @@ export function ThemeToggle({ floating = false }: { floating?: boolean }) {
   };
   const box = floating
     ? 'absolute bottom-20 left-3 z-30 h-10 w-10 border border-hairline bg-surface/90 shadow-card backdrop-blur'
-    : 'h-9 w-9 border border-chipline bg-surface';
+    : 'h-10 w-10 border border-chipline bg-surface';
   return (
     <button
       onClick={toggle}
@@ -50,23 +50,15 @@ export function Fingerprint({ size = 28, mono = false }: { size?: number; mono?:
   );
 }
 
-/** Logotip Družbe „Braća Hrvatskoga Zmaja" — zmajski grb (`/emblem.png`) + wordmark. */
+/** Logotip Družbe „Braća Hrvatskoga Zmaja” — zmajski grb (`/emblem.png`) + wordmark. */
 export function Logo({ variant = 'color', className = '' }: { variant?: 'color' | 'white'; className?: string }) {
   const isWhite = variant === 'white';
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
-      <span
-        className="grid h-7 w-7 shrink-0 place-items-center rounded-xl p-1"
-        style={{ background: isWhite ? 'rgba(255,255,255,0.15)' : '#0C5430' }}
-      >
+      <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-xl p-1 ${isWhite ? 'bg-white/15' : 'bg-hero'}`}>
         <img src="/emblem.png" alt="Grb Družbe Braća Hrvatskoga Zmaja" className="h-full w-full object-contain" />
       </span>
-      <span
-        className="text-sm font-bold tracking-tight"
-        style={{ color: isWhite ? '#fff' : '#0C5430' }}
-      >
-        DBHZ
-      </span>
+      <span className={`text-sm font-bold tracking-tight ${isWhite ? 'text-white' : 'text-navy'}`}>DBHZ</span>
     </span>
   );
 }
@@ -89,7 +81,8 @@ export function Card({
   ...rest
 }: PropsWithChildren<HTMLAttributes<HTMLDivElement> & { dark?: boolean }>) {
   // `dark` bira navy varijantu BEZ sukoba s bg-surface (bug bijelih kartica).
-  const tone = dark ? 'bg-navy text-white' : 'bg-surface border border-navy/10';
+  // Hero ostaje zmajsko zelen i u tamnoj temi (bg-navy je tamo svijetla zelena → loš kontrast bijelog teksta).
+  const tone = dark ? 'bg-hero text-white' : 'bg-surface border border-navy/10';
   return (
     <div className={`rounded-card shadow-card ${tone} ${className}`} {...rest}>
       {children}
@@ -126,8 +119,8 @@ export function Button({ variant = 'primary', full, className = '', children, ..
   const base =
     'inline-flex items-center justify-center gap-2 rounded-pill px-5 py-3.5 text-[0.95rem] font-semibold transition active:scale-[0.98] disabled:opacity-50';
   const tones = {
-    primary: 'bg-orange text-white hover:brightness-95 shadow-soft',
-    navy: 'bg-navy text-white hover:bg-navy-deep',
+    primary: 'bg-orange text-on-gold hover:brightness-95 shadow-soft',
+    navy: 'bg-hero text-white hover:bg-navy-deep',
     ghost: 'bg-transparent text-navy hover:bg-navy/5',
   } as const;
   return (

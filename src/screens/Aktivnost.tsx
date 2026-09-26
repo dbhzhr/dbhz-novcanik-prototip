@@ -5,7 +5,7 @@ import { navigate } from '../lib/router';
 
 const kindMeta: Record<string, { label: string; sign: string; color: string }> = {
   donacija: { label: 'Donacija', sign: '+', color: 'text-navy' },
-  clanarina: { label: 'Članarina', sign: '−', color: 'text-muted' },
+  clanarina: { label: 'Članarina', sign: '+', color: 'text-navy' },
   primljeno: { label: 'Primljeno (SEPA)', sign: '+', color: 'text-navy' },
 };
 
@@ -27,8 +27,8 @@ export function Aktivnost() {
             </p>
           </div>
           <div className="text-right">
-            <p className="eyebrow">Članova (zmajeva)</p>
-            <p className="mt-1 text-2xl font-semibold tabular-nums text-navy">{community.activeMembers}</p>
+            <p className="eyebrow">Članova (najviše)</p>
+            <p className="mt-1 text-2xl font-semibold tabular-nums text-navy">{community.membersMax}</p>
           </div>
         </Card>
 
@@ -46,7 +46,7 @@ export function Aktivnost() {
           </div>
           <p className="mt-3 text-xs leading-relaxed text-muted">
             Družba osnovana {associationBudget.founded}, obnovljena {associationBudget.restored} ·{' '}
-            {community.activeMembers} članova (numerus clausus, Pravila 2024.). Prikupljeni iznosi su ilustrativni demo.{' '}
+            do {community.membersMax} redovitih članova (numerus clausus, Pravila 2024.). Prikupljeni iznosi su ilustrativni demo.{' '}
             {associationBudget.transparencyNote}
           </p>
           <p className="mt-2 rounded-2xl bg-navy/5 px-3 py-2 text-[0.7rem] leading-relaxed text-muted">

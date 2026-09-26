@@ -1,7 +1,16 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { Share, X } from './icons';
 
-const DISMISS_KEY = 'edw_install_dismissed';
+const DISMISS_KEY = 'dbhz_install_dismissed';
+
+function wasDismissed() {
+  try {
+    return !!localStorage.getItem(DISMISS_KEY);
+  } catch {
+    return false;
+  }
+}
 
 function isStandalone() {
   return (
@@ -27,7 +36,7 @@ export function InstallPrompt() {
   const [iosHelp, setIosHelp] = useState(false);
 
   useEffect(() => {
-    if (isStandalone() || localStorage.getItem(DISMISS_KEY)) return;
+    if (isStandalone() || wasDismissed()) return;
     const onBip = () => setBip((window as unknown as { __bip?: BIP }).__bip ?? null);
     window.addEventListener('bip-ready', onBip);
     const t = setTimeout(() => setShow(true), 1500);
@@ -46,7 +55,11 @@ export function InstallPrompt() {
   if (!canPrompt && !ios) return null;
 
   function dismiss() {
-    localStorage.setItem(DISMISS_KEY, '1');
+    try {
+      localStorage.setItem(DISMISS_KEY, '1');
+    } catch {
+      /* privatni način — samo sakrij za ovu sesiju */
+    }
     setShow(false);
   }
 
@@ -68,17 +81,19 @@ export function InstallPrompt() {
 
   return createPortal(
     <div className="fixed inset-x-0 top-0 z-[80] px-3 pt-[max(0.6rem,env(safe-area-inset-top))]">
-      <div className="mx-auto max-w-[460px] rounded-2xl bg-navy p-3 text-white shadow-card ring-1 ring-black/10 animate-riseIn">
+      <div className="mx-auto max-w-[460px] rounded-2xl bg-hero p-3 text-white shadow-card ring-1 ring-black/10 animate-riseIn">
         <div className="flex items-center gap-3">
           <img src="/icons/icon-192.png" alt="" className="h-10 w-10 rounded-xl" />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold leading-tight">Instaliraj kao aplikaciju</p>
             <p className="text-xs leading-snug text-white/70">Otvara se preko cijelog ekrana, bez adresne trake — kao prava app.</p>
           </div>
-          <button onClick={install} className="shrink-0 rounded-pill bg-orange px-3.5 py-2 text-sm font-semibold text-white">
+          <button onClick={install} className="shrink-0 rounded-pill bg-orange px-3.5 py-2 text-sm font-semibold text-on-gold">
             {canPrompt ? 'Instaliraj' : 'Kako?'}
           </button>
-          <button onClick={dismiss} aria-label="Odbaci" className="grid h-7 w-7 shrink-0 place-items-center rounded-pill text-white/60 hover:bg-white/10">✕</button>
+          <button onClick={dismiss} aria-label="Odbaci" className="grid h-10 w-10 shrink-0 place-items-center rounded-pill text-white/75 hover:bg-white/10">
+            <X className="h-4 w-4" aria-hidden />
+          </button>
         </div>
 
         {iosHelp && (
@@ -86,7 +101,7 @@ export function InstallPrompt() {
             {isIOSSafari() ? (
               <p>
                 U <b>Safariju</b>: tapni <span className="inline-flex items-center gap-1">Podijeli
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline"><path d="M12 16V4M8 8l4-4 4 4M5 12v7a1 1 0 001 1h12a1 1 0 001-1v-7" /></svg>
+                  <Share className="inline h-3.5 w-3.5" aria-hidden />
                 </span> → <b>Dodaj na početni zaslon</b> → <b>Dodaj</b>.
               </p>
             ) : (

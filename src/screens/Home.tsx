@@ -1,10 +1,10 @@
-import { account, community, edeur, eur, kindLabel, ledger, loyalty } from '../lib/mock';
+import { account, bastina, community, edeur, eur, kindLabel, ledger, loyalty } from '../lib/mock';
 import { Amount, Button, Card, Chip, Fingerprint } from '../components/ui';
 import { Award, Landmark } from '../components/icons';
 import type { Screen } from '../App';
 
 export function Home({ go }: { go: (s: Screen) => void }) {
-  const pct = Math.round((community.totalRaised / community.goal) * 100);
+  const pct = Math.min(100, Math.round((community.totalRaised / community.goal) * 100));
   return (
     <div className="space-y-4 px-4 pb-6 pt-4 animate-riseIn">
       {/* Balance kartica — navy, hero */}
@@ -16,15 +16,15 @@ export function Home({ go }: { go: (s: Screen) => void }) {
             </div>
             <div className="leading-tight">
               <p className="text-sm font-semibold">{account.name}</p>
-              <p className="text-xs text-white/55">{account.address}</p>
+              <p className="text-xs text-white/75">{account.address}</p>
             </div>
           </div>
           <Chip tone="live">{account.level}</Chip>
         </div>
         <div className="px-5 pb-5 pt-6">
-          <p className="text-xs uppercase tracking-eyebrow text-white/55">Stanje</p>
+          <p className="text-xs uppercase tracking-eyebrow text-white/75">Stanje</p>
           <p className="mt-1 text-5xl font-semibold tracking-display tabular-nums">{eur(account.balance)}</p>
-          <p className="mt-1 text-sm text-white/60">EURe na Gnosisu</p>
+          <p className="mt-1 text-sm text-white/75">EURe na Gnosisu</p>
         </div>
         <div className="grid grid-cols-3 gap-px bg-white/10">
           {[
@@ -35,7 +35,7 @@ export function Home({ go }: { go: (s: Screen) => void }) {
             <button
               key={a.label}
               onClick={() => go(a.s)}
-              className="bg-navy py-3.5 text-sm font-semibold text-white transition hover:bg-navy-deep"
+              className="bg-hero py-3.5 text-sm font-semibold text-white transition hover:bg-navy-deep"
             >
               {a.label}
             </button>
@@ -58,7 +58,7 @@ export function Home({ go }: { go: (s: Screen) => void }) {
           </Button>
         </div>
         <p className="mt-3 border-t border-hairline pt-3 text-xs leading-relaxed text-muted">
-          Kao {account.level} imaš uvid u kretanje sredstava fondova i pravo glasovanja o raspodjeli sredstava za baštinu.
+          Kao {account.level} imaš uvid u kretanje sredstava fondova i sam usmjeravaš svoj doprinos na fondove za baštinu.
         </p>
       </Card>
 
@@ -81,7 +81,7 @@ export function Home({ go }: { go: (s: Screen) => void }) {
         <Card className="flex items-center justify-between p-5">
           <div>
             <p className="eyebrow">Baština Družbe</p>
-            <p className="mt-1 text-lg font-semibold text-navy">6 projekata baštine</p>
+            <p className="mt-1 text-lg font-semibold text-navy">{bastina.length} projekata baštine</p>
             <p className="mt-0.5 text-sm text-muted">objekti i projekti · javni registar →</p>
           </div>
           <span className="grid h-11 w-11 place-items-center rounded-pill bg-navy/10 text-navy">
@@ -94,7 +94,7 @@ export function Home({ go }: { go: (s: Screen) => void }) {
       <Card className="p-5">
         <div className="flex items-center justify-between">
           <p className="eyebrow">Družba · javno</p>
-          <span className="text-xs text-muted">{community.activeMembers} članova (zmajeva)</span>
+          <span className="text-xs text-muted">do {community.membersMax} članova (numerus clausus)</span>
         </div>
         <div className="mt-2 flex items-end justify-between">
           <Amount value={eur(community.totalRaised)} />
@@ -102,8 +102,8 @@ export function Home({ go }: { go: (s: Screen) => void }) {
         </div>
         <div className="mt-3 h-2 overflow-hidden rounded-pill bg-chipline">
           <div
-            className="h-full rounded-pill"
-            style={{ width: `${pct}%`, background: 'linear-gradient(90deg,#D99E12,#F0C860)' }}
+            className="h-full rounded-pill bg-gradient-to-r from-orange to-orange-light"
+            style={{ width: `${pct}%` }}
           />
         </div>
         <p className="mt-2 text-xs text-muted">{community.goalLabel}</p>

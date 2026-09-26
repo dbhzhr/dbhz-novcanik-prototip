@@ -1,12 +1,33 @@
-import { lazy, Suspense, useState } from 'react';
+import { Component, lazy, Suspense, useState, type ReactNode } from 'react';
 import { bistaCampaign, eur } from '../lib/mock';
 import { Button, Card, Chip, ScreenTitle } from '../components/ui';
 import { PaymentConfirm } from '../components/PaymentConfirm';
+import { Landmark } from '../components/icons';
 
 const BistaViewer = lazy(() => import('./BistaViewer'));
 
+/** Isti model u javnom katalogu 3D modela DBHZ (repo dbhz-3d-modeli). */
+const KATALOG_URL = 'https://dbhz-3d-modeli.domovina.ai/?id=tomislav-bista';
+
+/** Ako se GLB ili three.js chunk ne učita (mreža, WebGL), R3F baci grešku u React stablo —
+ *  bez granice bi pao cijeli novčanik. Ovako pada samo kartica s modelom. */
+class ViewerBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    if (!this.state.failed) return this.props.children;
+    return (
+      <div className="grid h-full w-full place-items-center px-6 text-center text-sm text-white/70">
+        3D model se nije mogao učitati. Provjeri vezu i pokušaj ponovno otvoriti ekran.
+      </div>
+    );
+  }
+}
+
 const statusMeta: Record<string, { label: string; cls: string }> = {
-  postavljeno: { label: 'Postavljeno ✓', cls: 'bg-orange/10 text-orange' },
+  postavljeno: { label: 'Postavljeno', cls: 'bg-orange/10 text-orange' },
   'u tijeku': { label: 'U tijeku', cls: 'bg-navy/10 text-navy' },
   predloženo: { label: 'Predloženo', cls: 'bg-chip text-muted' },
 };
@@ -29,25 +50,32 @@ export function Bista() {
       <div className="space-y-4 px-4">
         {/* 3D viewer */}
         <Card dark className="overflow-hidden p-0">
-          <div className="relative h-72 w-full">
-            <Suspense
-              fallback={
-                <div className="grid h-full w-full place-items-center text-sm text-white/60">
-                  Učitavanje 3D modela…
-                </div>
-              }
-            >
-              <BistaViewer />
-            </Suspense>
-            <span className="pointer-events-none absolute bottom-2 left-0 right-0 text-center text-[0.65rem] text-white/55">
-              Povuci za rotaciju · približi prstima
-            </span>
+          <div className="relative h-80 w-full">
+            <ViewerBoundary>
+              <Suspense
+                fallback={
+                  <div className="grid h-full w-full place-items-center text-sm text-white/60">
+                    Učitavanje 3D modela…
+                  </div>
+                }
+              >
+                <BistaViewer />
+              </Suspense>
+            </ViewerBoundary>
           </div>
         </Card>
+        <a
+          href={KATALOG_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="-mt-2 block px-1 text-right text-xs font-semibold text-navy-mid transition hover:text-orange"
+        >
+          Otvori u katalogu 3D modela DBHZ ↗
+        </a>
 
         {/* Napomena o atribuciji / činjenicama */}
         <div className="flex items-start gap-2 rounded-card bg-navy/5 px-4 py-3">
-          <span className="mt-0.5 text-base" aria-hidden>🏛️</span>
+          <Landmark className="mt-0.5 h-4 w-4 shrink-0 text-navy" aria-hidden />
           <p className="text-xs leading-relaxed text-muted">
             <span className="font-semibold text-navy">Kralj Tomislav</span> — prvi hrvatski kralj. Družba je glavni
             inicijator obilježavanja <span className="font-semibold text-navy">1100. obljetnice Hrvatskoga Kraljevstva

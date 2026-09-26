@@ -1,10 +1,10 @@
 import { grantPayouts, edeur, eur, type GrantPayout } from '../lib/mock';
 import { Card, ScreenTitle } from '../components/ui';
-import { Banknote } from '../components/icons';
+import { Banknote, Check } from '../components/icons';
 import type { Screen } from '../App';
 
-const statusMeta: Record<GrantPayout['status'], { label: string; cls: string }> = {
-  primljeno: { label: 'Primljeno ✓', cls: 'bg-orange/10 text-orange' },
+const statusMeta: Record<GrantPayout['status'], { label: string; cls: string; done?: boolean }> = {
+  primljeno: { label: 'Primljeno', cls: 'bg-orange/10 text-orange', done: true },
   dostupno: { label: 'Dostupno', cls: 'bg-navy/10 text-navy' },
   'u obradi': { label: 'U obradi', cls: 'bg-chip text-muted' },
 };
@@ -25,9 +25,9 @@ export function Primanja({ go }: { go: (s: Screen) => void }) {
       <div className="space-y-4 px-4">
         {/* Hero */}
         <Card dark className="p-5">
-          <p className="text-xs uppercase tracking-eyebrow text-white/55">Primljeno od Družbe</p>
+          <p className="text-xs uppercase tracking-eyebrow text-white/75">Primljeno od Družbe</p>
           <p className="mt-1 text-4xl font-semibold tracking-display tabular-nums">{eur(totalThisYear)}</p>
-          <p className="mt-1 text-sm text-white/65">EURe naknade · bez provizija i posrednika</p>
+          <p className="mt-1 text-sm text-white/75">EURe naknade · bez provizija i posrednika</p>
         </Card>
 
         {/* Lista naknada i priznanja */}
@@ -36,20 +36,14 @@ export function Primanja({ go }: { go: (s: Screen) => void }) {
             const sm = statusMeta[p.status];
             const value = p.currency === 'edeur' ? edeur(p.amount) : eur(p.amount);
             const clickable = Boolean(p.screen);
-            return (
-              <button
-                key={p.id}
-                onClick={() => p.screen && go(p.screen as Screen)}
-                disabled={!clickable}
-                className={`flex w-full items-start justify-between gap-3 px-4 py-3.5 text-left ${
-                  clickable ? 'transition hover:bg-navy/[0.03]' : 'cursor-default'
-                }`}
-              >
+            const content = (
+              <>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-semibold leading-snug text-navy-ink">{p.title}</p>
-                    <span className={`shrink-0 rounded-pill px-2 py-0.5 text-[0.6rem] font-semibold ${sm.cls}`}>
+                    <span className={`inline-flex shrink-0 items-center gap-1 rounded-pill px-2 py-0.5 text-[0.6rem] font-semibold ${sm.cls}`}>
                       {sm.label}
+                      {sm.done && <Check className="h-3 w-3" aria-hidden />}
                     </span>
                   </div>
                   <p className="mt-0.5 truncate text-xs text-muted">{p.detail}</p>
@@ -59,7 +53,18 @@ export function Primanja({ go }: { go: (s: Screen) => void }) {
                   </p>
                 </div>
                 <span className="shrink-0 pt-0.5 text-sm font-semibold tabular-nums text-navy">+{value}</span>
+              </>
+            );
+            const row = 'flex w-full items-start justify-between gap-3 px-4 py-3.5 text-left';
+            // Samo redak s odredištem je gumb; ostali su običan sadržaj (ne onemogućeni gumbi).
+            return clickable ? (
+              <button key={p.id} onClick={() => go(p.screen as Screen)} className={`${row} transition hover:bg-navy/[0.03]`}>
+                {content}
               </button>
+            ) : (
+              <div key={p.id} className={row}>
+                {content}
+              </div>
             );
           })}
         </Card>

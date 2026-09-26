@@ -2,6 +2,11 @@
 // `text-navy`/`text-orange`. Za inline u tekstu/gumbu: `inline-flex items-center gap-1.5`.
 // Zamjena za šarene emojije (vidi sectorIcon mapu za sektorske/kategorijske oznake baštine).
 import {
+  Check,
+  CreditCard,
+  Lock,
+  Share,
+  X,
   Archive,
   Award,
   Banknote,
@@ -21,6 +26,11 @@ import {
 } from 'lucide-react';
 
 export {
+  Check,
+  CreditCard,
+  Lock,
+  Share,
+  X,
   Archive,
   Award,
   Banknote,

@@ -40,8 +40,8 @@ export function Projekti() {
               </div>
               <div className="mt-2 h-2 overflow-hidden rounded-pill bg-chipline">
                 <div
-                  className="h-full rounded-pill"
-                  style={{ width: `${pct}%`, background: 'linear-gradient(90deg,#D99E12,#F0C860)' }}
+                  className="h-full rounded-pill bg-gradient-to-r from-orange to-orange-light"
+                  style={{ width: `${pct}%` }}
                 />
               </div>
               <div className="mt-2 flex items-center justify-between text-xs text-muted">
@@ -76,7 +76,7 @@ export function Projekti() {
               <p className="text-lg font-semibold tabular-nums text-navy">{eur(communityStats.avgInvestment)}</p>
             </div>
             <div className="rounded-2xl border border-hairline p-3">
-              <p className="text-[0.7rem] text-muted">Rezerve fonda</p>
+              <p className="text-[0.7rem] text-muted">Stanje fondova</p>
               <p className="text-lg font-semibold tabular-nums text-navy">{eur(associationBudget.reserves)}</p>
             </div>
           </div>
@@ -88,7 +88,8 @@ export function Projekti() {
           <p className="text-xs leading-relaxed text-muted">
             <span className="font-semibold text-navy">Transparentnost na lancu.</span> Družba (osnovana{' '}
             {associationBudget.founded}, obnovljena {associationBudget.restored}) u demo prikazu prikupila{' '}
-            {eur(associationBudget.totalRaised)} i uložila {eur(associationBudget.totalInvested)} u baštinu.
+            {eur(associationBudget.totalRaised)}: {eur(associationBudget.totalInvested)} uloženo je u baštinu, a{' '}
+            {eur(associationBudget.reserves)} je još u namjenskim fondovima.
             IBAN: {associationBudget.iban}. Self-custody novčanik dodaje{' '}
             <span className="font-semibold text-navy">real-time i projektno-sljedivi</span> sloj uz klasičnu
             bankovnu transparentnost. Iznosi u fondu su ilustrativni demo podaci.

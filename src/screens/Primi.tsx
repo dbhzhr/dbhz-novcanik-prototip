@@ -41,11 +41,13 @@ function QrMock({ seed }: { seed: string }) {
 
   return (
     <div
+      role="img"
+      aria-label={`QR kod adrese ${seed} (demo)`}
       className="grid gap-[2px] rounded-2xl bg-white p-3 shadow-soft ring-1 ring-navy/5"
       style={{ gridTemplateColumns: `repeat(${N}, 1fr)`, width: '11.5rem', height: '11.5rem' }}
     >
       {cells.map((on, i) => (
-        <div key={i} className={on ? 'rounded-[1px] bg-navy' : 'bg-transparent'} />
+        <div key={i} className={on ? 'rounded-[1px] bg-hero' : 'bg-transparent'} />
       ))}
     </div>
   );

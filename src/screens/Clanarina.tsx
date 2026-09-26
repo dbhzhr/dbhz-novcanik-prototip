@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { dmy, eur, plural, projects, tiers, type TierKey } from '../lib/mock';
 import { Button, Card, Chip, FeatureRow, ScreenTitle } from '../components/ui';
 import { PaymentConfirm, type ConfirmLine } from '../components/PaymentConfirm';
+import { Check } from '../components/icons';
 
 export function Clanarina() {
   const [tierKey, setTierKey] = useState<TierKey>('redovni');
@@ -54,9 +55,9 @@ export function Clanarina() {
   return (
     <div className="pb-6 animate-riseIn">
       <ScreenTitle
-        eyebrow="Donatorska pretplata"
+        eyebrow="Pretplata ili članarina"
         title="Tvoja članarina"
-        sub="Plati unaprijed za više razdoblja (set & forget) i sam usmjeri doprinos na fondove za baštinu koje želiš podržati — sve u jednoj potvrdi otiskom."
+        sub="Plati unaprijed za više razdoblja i više ne misliš na to, a doprinos sam usmjeri na fondove za baštinu koje želiš podržati — sve u jednoj potvrdi otiskom."
       />
 
       <div className="space-y-4 px-4">
@@ -66,6 +67,7 @@ export function Clanarina() {
             <button
               key={k}
               onClick={() => setTier(k)}
+              aria-pressed={tierKey === k}
               className={`rounded-pill px-3 py-2.5 text-center transition ${
                 tierKey === k ? 'bg-surface shadow-soft' : 'text-muted hover:text-navy'
               }`}
@@ -83,11 +85,11 @@ export function Clanarina() {
         {/* Status */}
         <Card dark className="p-5">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-eyebrow text-white/55">Status · plaćeno do</p>
+            <p className="text-xs uppercase tracking-eyebrow text-white/75">Status · plaćeno do</p>
             <Chip tone="live">Aktivno</Chip>
           </div>
           <p className="mt-2 text-3xl font-semibold tracking-display">{dmy(paidThrough)}</p>
-          <p className="mt-1 text-sm text-white/65">
+          <p className="mt-1 text-sm text-white/75">
             {prepay} {plural(prepay, tier.unit)} unaprijed · {eur(tier.rate)} {tier.adverb}
           </p>
         </Card>
@@ -109,9 +111,10 @@ export function Clanarina() {
               <button
                 key={p}
                 onClick={() => setPrepay(p)}
+                aria-pressed={prepay === p}
                 className={`rounded-pill border px-3 py-1.5 text-sm font-semibold transition ${
                   prepay === p
-                    ? 'border-orange bg-orange text-white'
+                    ? 'border-orange bg-orange text-on-gold'
                     : 'border-chipline bg-chip text-navy hover:border-navy/30'
                 }`}
               >
@@ -124,6 +127,8 @@ export function Clanarina() {
         {/* Podmiri unatrag */}
         {tier.owed > 0 && (
           <button
+            role="switch"
+            aria-checked={settle}
             onClick={() => setSettle((v) => !v)}
             className="flex w-full items-center justify-between rounded-card border border-chipline bg-surface px-4 py-4 text-left"
           >
@@ -146,7 +151,7 @@ export function Clanarina() {
         {/* Raspodjela na namjenske račune — interni crowdfunding */}
         <Card className="p-5">
           <div className="flex items-center justify-between">
-            <p className="eyebrow">Usmjeri na projekte</p>
+            <p className="eyebrow">Usmjeri na fondove</p>
             <button onClick={ravnomjerno} className="text-xs font-semibold text-navy-mid">
               Ravnomjerno
             </button>
@@ -167,7 +172,7 @@ export function Clanarina() {
                       <p className="text-[0.7rem] text-muted">{pct}% prikupljeno · {p.contributors} donatora</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <MiniStep onMinus={() => removeUnit(p.id)} onPlus={() => addUnit(p.id)} canPlus={remaining > 0} canMinus={units > 0} />
+                      <MiniStep label={p.name} onMinus={() => removeUnit(p.id)} onPlus={() => addUnit(p.id)} canPlus={remaining > 0} canMinus={units > 0} />
                       <span className="w-14 text-right text-sm font-semibold tabular-nums text-navy">
                         {eur(units * tier.rate)}
                       </span>
@@ -183,9 +188,13 @@ export function Clanarina() {
               remaining === 0 ? 'bg-navy/5 text-navy' : 'bg-orange/10 text-orange'
             }`}
           >
-            {remaining === 0
-              ? 'Sve raspoređeno ✓'
-              : `Preostalo rasporediti: ${eur(remaining * tier.rate)}`}
+            {remaining === 0 ? (
+              <span className="inline-flex items-center gap-1">
+                Sve raspoređeno <Check className="h-3.5 w-3.5" aria-hidden />
+              </span>
+            ) : (
+              `Preostalo rasporediti: ${eur(remaining * tier.rate)}`
+            )}
           </div>
         </Card>
 
@@ -223,6 +232,7 @@ export function Clanarina() {
         lines={confirmLines}
         footnote={`Plaćeno do ${dmy(paidThrough)}`}
         onDone={() => setConfirming(false)}
+        onCancel={() => setConfirming(false)}
       />
     </div>
   );
@@ -245,23 +255,25 @@ function Stepper({ value, onChange }: { value: number; onChange: (n: number) => 
 }
 
 function MiniStep({
+  label,
   onMinus,
   onPlus,
   canPlus,
   canMinus,
 }: {
+  label: string;
   onMinus: () => void;
   onPlus: () => void;
   canPlus: boolean;
   canMinus: boolean;
 }) {
-  const b = 'grid h-7 w-7 place-items-center rounded-pill bg-chip text-base font-semibold text-navy transition hover:bg-chipline disabled:opacity-30';
+  const b = 'grid h-10 w-10 place-items-center rounded-pill bg-chip text-base font-semibold text-navy transition hover:bg-chipline disabled:opacity-30';
   return (
     <div className="flex items-center gap-1.5">
-      <button className={b} onClick={onMinus} disabled={!canMinus} aria-label="Manje">
+      <button className={b} onClick={onMinus} disabled={!canMinus} aria-label={`Manje za ${label}`}>
         −
       </button>
-      <button className={b} onClick={onPlus} disabled={!canPlus} aria-label="Više">
+      <button className={b} onClick={onPlus} disabled={!canPlus} aria-label={`Više za ${label}`}>
         +
       </button>
     </div>

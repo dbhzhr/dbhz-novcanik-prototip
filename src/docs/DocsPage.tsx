@@ -170,7 +170,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       <main className="mx-auto max-w-3xl px-5 py-8">{children}</main>
       <footer className="border-t border-hairline">
         <p className="mx-auto max-w-3xl px-5 py-6 text-xs leading-relaxed text-muted">
-          Družba „Braća Hrvatskoga Zmaja" · dbhz.hr
+          Družba „Braća Hrvatskoga Zmaja” · dbhz.hr
           <br />
           Nacrt — sve odredbe podložne pravnoj potvrdi prije objave. Interaktivni prototip (demo rješenja).
           Logo i ime Družbe koriste se isključivo za demo; produkcija traži suglasnost Družbe.
@@ -219,7 +219,7 @@ export default function DocsPage({ path }: { path: string }) {
             key={d.slug}
             onClick={() => navigate('/dokumenti/' + d.slug)}
             className={`rounded-pill border px-3 py-1.5 text-sm font-semibold transition ${
-              d.slug === slug ? 'border-orange bg-orange text-white' : 'border-chipline bg-surface text-navy hover:border-navy/30'
+              d.slug === slug ? 'border-orange bg-orange text-on-gold' : 'border-chipline bg-surface text-navy hover:border-navy/30'
             }`}
           >
             {d.title}

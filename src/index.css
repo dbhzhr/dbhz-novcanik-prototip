@@ -21,6 +21,10 @@
   --hairline: 222 230 222;
   --chip: 238 244 236;
   --chipline: 214 226 214;
+  /* Tema-stabilni tokeni: hero kartice ostaju zmajsko zelene i u tamnoj temi (bijeli
+     tekst 9:1), tekst na zlatu je tamnozelen (#062716 na #D99E12 ≈ 6,8:1). */
+  --hero: 12 84 48;
+  --on-gold: 6 39 22;
 }
 .theme-dark {
   --navy: 64 178 110; /* posvijetljena zelena (kontrast na tamnom) #40B26E */
@@ -35,6 +39,8 @@
   --hairline: 34 58 44;
   --chip: 24 44 32;
   --chipline: 44 72 54;
+  --hero: 12 84 48;
+  --on-gold: 6 39 22;
 }
 
 @tailwind base;

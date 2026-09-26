@@ -126,7 +126,8 @@ export function App() {
           onDismiss={() => setPush(false)}
         />
       )}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto">
+      {/* pb-16: zadnji sadržaj ne smije ostati ispod plutajućih gumba (Komentari, tema) */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto pb-16">
         {screen === 'home' && <Home go={setScreen} />}
         {screen === 'doniraj' && <Doniraj />}
         {screen === 'clanarina' && <Clanarina />}
@@ -199,7 +200,7 @@ function DesktopSurround({ navigate }: { navigate: (s: Screen) => void }) {
       <h2 className="mt-6 text-[2.1rem] font-semibold leading-[1.02] tracking-display text-navy">
         Družba „Braća
         <br />
-        Hrvatskoga Zmaja"
+        Hrvatskoga Zmaja”
       </h2>
       <p className="mt-3 text-sm font-semibold text-navy-mid">Pro aris et focis, Deo propitio!</p>
       <p className="mt-3 text-sm leading-relaxed text-muted">
@@ -222,11 +223,14 @@ function DesktopSurround({ navigate }: { navigate: (s: Screen) => void }) {
 
       <p className="mt-8 eyebrow">Poveznice</p>
       <div className="mt-2 flex flex-col gap-1.5 text-sm">
-        <a href="https://dbhz.hr" target="_blank" rel="noreferrer" className="text-navy-mid transition hover:text-orange">
+        <a href="https://dbhz.hr" target="_blank" rel="noopener noreferrer" className="text-navy-mid transition hover:text-orange">
           dbhz.hr ↗
         </a>
-        <a href="https://dbhz.hr/povijest-starog-grada-ozlja/" target="_blank" rel="noreferrer" className="text-navy-mid transition hover:text-orange">
+        <a href="https://dbhz.hr/povijest-starog-grada-ozlja/" target="_blank" rel="noopener noreferrer" className="text-navy-mid transition hover:text-orange">
           Stari grad Ozalj ↗
+        </a>
+        <a href="https://dbhz-3d-modeli.domovina.ai" target="_blank" rel="noopener noreferrer" className="text-navy-mid transition hover:text-orange">
+          Katalog 3D modela DBHZ ↗
         </a>
       </div>
 
@@ -238,7 +242,7 @@ function DesktopSurround({ navigate }: { navigate: (s: Screen) => void }) {
       </button>
 
       <p className="mt-8 text-xs leading-relaxed text-muted">
-        Družba „Braća Hrvatskoga Zmaja" · osnovana 1905. · dbhz.hr
+        Družba „Braća Hrvatskoga Zmaja” · osnovana 1905. · dbhz.hr
         <br />
         Logo i ime Družbe koriste se isključivo za demo prototip; produkcija traži suglasnost Družbe.
       </p>
@@ -388,6 +392,7 @@ function TabBar({ screen, go, onMore }: { screen: Screen; go: (s: Screen) => voi
           <button
             key={t.key}
             onClick={() => go(t.key)}
+            aria-current={active ? 'page' : undefined}
             className={`flex flex-1 flex-col items-center gap-1 rounded-2xl py-1.5 text-[0.62rem] font-semibold transition ${
               active ? 'text-orange' : 'text-muted hover:text-navy'
             }`}
@@ -401,6 +406,7 @@ function TabBar({ screen, go, onMore }: { screen: Screen; go: (s: Screen) => voi
       })}
       <button
         onClick={onMore}
+        aria-haspopup="dialog"
         className={`flex flex-1 flex-col items-center gap-1 rounded-2xl py-1.5 text-[0.62rem] font-semibold transition ${
           moreActive ? 'text-orange' : 'text-muted hover:text-navy'
         }`}
@@ -418,8 +424,13 @@ function TabBar({ screen, go, onMore }: { screen: Screen; go: (s: Screen) => voi
 
 /** "Više" — bottom sheet sa sekundarnim ekranima. Anchor: phone frame (relative). */
 function MoreSheet({ screen, go, onClose }: { screen: Screen; go: (s: Screen) => void; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
   return (
-    <div className="absolute inset-0 z-40">
+    <div className="absolute inset-0 z-40" role="dialog" aria-modal="true" aria-label="Više">
       <button aria-label="Zatvori" onClick={onClose} className="absolute inset-0 bg-black/30 backdrop-blur-[1px]" />
       <div className="absolute inset-x-0 bottom-0 rounded-t-card border-t border-hairline bg-surface pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-card animate-riseIn">
         <div className="mx-auto mb-2 h-1 w-10 rounded-pill bg-chipline" />
@@ -431,6 +442,7 @@ function MoreSheet({ screen, go, onClose }: { screen: Screen; go: (s: Screen) =>
               <button
                 key={m.s}
                 onClick={() => go(m.s)}
+                aria-current={active ? 'page' : undefined}
                 className="flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left transition hover:bg-navy/[0.04]"
               >
                 <span

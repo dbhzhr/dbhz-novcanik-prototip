@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { polls, type Poll } from '../lib/mock';
+import { plural, polls, type Poll } from '../lib/mock';
 import { Card, FeatureRow, ScreenTitle } from '../components/ui';
+import { Check } from '../components/icons';
+
+const VOTE_FORMS: [string, string, string] = ['glas', 'glasa', 'glasova'];
 
 // Glasovanje — 1 zmaj = 1 glas. Anti-sybil kroz passkey identitet + članstvo Družbe.
 // Nagrada za sudjelovanje je SOULBOUND (zmajEUR priznanje), NIKAD prenosivi novac —
@@ -59,6 +62,7 @@ function PollCard({ poll }: { poll: Poll }) {
             <button
               key={o.id}
               disabled={!!voted}
+              aria-pressed={mine}
               onClick={() => setVoted(o.id)}
               className={`relative w-full overflow-hidden rounded-2xl border px-4 py-3 text-left transition ${
                 mine ? 'border-orange' : 'border-chipline'
@@ -73,7 +77,7 @@ function PollCard({ poll }: { poll: Poll }) {
               )}
               <span className="relative flex items-center justify-between">
                 <span className="flex items-center gap-2 text-sm font-semibold text-navy-ink">
-                  {mine && <span className="text-orange">✓</span>}
+                  {mine && <Check className="h-4 w-4 text-orange" aria-label="Tvoj glas" />}
                   {o.label}
                 </span>
                 {voted && <span className="text-sm font-semibold tabular-nums text-navy">{pct}%</span>}
@@ -85,9 +89,9 @@ function PollCard({ poll }: { poll: Poll }) {
 
       <p className="mt-3 text-xs text-muted">
         {voted ? (
-          <>Glasao/la si · {total.toLocaleString('hr-HR')} glasova ukupno · rezultati uživo</>
+          <>Glasao/la si · ukupno {total.toLocaleString('hr-HR')} {plural(total, VOTE_FORMS)} · rezultati uživo</>
         ) : (
-          <>{total.toLocaleString('hr-HR')} glasova · odaberi opciju za glasanje (potvrda otiskom)</>
+          <>{total.toLocaleString('hr-HR')} {plural(total, VOTE_FORMS)} · odaberi opciju za glasanje (potvrda otiskom)</>
         )}
       </p>
     </Card>

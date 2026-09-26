@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { edeur, eur, loyalty } from '../lib/mock';
 import { Button, Card, FeatureRow, ScreenTitle } from '../components/ui';
-import { FileText } from '../components/icons';
+import { Check, FileText, Lock } from '../components/icons';
 import { PaymentConfirm } from '../components/PaymentConfirm';
 import { navigate } from '../lib/router';
 
 export function Nagrade() {
-  const max = Math.min(loyalty.balance, loyalty.fundAvailable);
+  // Demo: stanje se smanji nakon zamjene (zmajEUR se spaljuje, EURe stiže iz fonda).
+  const [balance, setBalance] = useState(loyalty.balance);
+  const [fund, setFund] = useState(loyalty.fundAvailable);
+  const max = Math.min(balance, fund);
   const [amount, setAmount] = useState(loyalty.balance);
   const [confirming, setConfirming] = useState(false);
 
@@ -22,21 +25,21 @@ export function Nagrade() {
         {/* zmajEUR balans */}
         <Card dark className="p-5">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-eyebrow text-white/55">Zasluženo radom na baštini</p>
+            <p className="text-xs uppercase tracking-eyebrow text-white/75">Zasluženo radom na baštini</p>
             <span className="rounded-pill bg-white/12 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wide">
               ne-prenosivo
             </span>
           </div>
-          <p className="mt-2 text-4xl font-semibold tracking-display tabular-nums">{edeur(loyalty.balance)}</p>
-          <p className="mt-1 text-sm text-white/65">≈ {eur(loyalty.balance)} vrijednosti · fond: {eur(loyalty.fundAvailable)}</p>
+          <p className="mt-2 text-4xl font-semibold tracking-display tabular-nums">{edeur(balance)}</p>
+          <p className="mt-1 text-sm text-white/75">≈ {eur(balance)} vrijednosti · fond: {eur(fund)}</p>
         </Card>
 
         {/* Status volontera */}
         <Card className="p-5">
           <div className="flex items-center justify-between">
             <p className="eyebrow">Status volontera</p>
-            <span className="rounded-pill bg-orange/10 px-2.5 py-0.5 text-[0.65rem] font-semibold text-orange">
-              Aktivan volonter ✓
+            <span className="inline-flex items-center gap-1 rounded-pill bg-orange/10 px-2.5 py-0.5 text-[0.65rem] font-semibold text-orange">
+              Aktivan volonter <Check className="h-3 w-3" aria-hidden />
             </span>
           </div>
           <div className="mt-3 grid grid-cols-3 gap-2 text-center">
@@ -45,11 +48,11 @@ export function Nagrade() {
               <p className="text-[0.7rem] text-muted">aktivnosti</p>
             </div>
             <div>
-              <p className="text-xl font-semibold tabular-nums text-navy">{edeur(loyalty.balance)}</p>
+              <p className="text-xl font-semibold tabular-nums text-navy">{edeur(balance)}</p>
               <p className="text-[0.7rem] text-muted">ukupno</p>
             </div>
             <div>
-              <p className="text-xl font-semibold tabular-nums text-navy">{eur(loyalty.fundAvailable)}</p>
+              <p className="text-xl font-semibold tabular-nums text-navy">{eur(fund)}</p>
               <p className="text-[0.7rem] text-muted">fond dostupan</p>
             </div>
           </div>
@@ -69,7 +72,7 @@ export function Nagrade() {
                 <li>· Rad na obnovi spomenika</li>
                 <li>· Vodstvo posjetitelja</li>
                 <li>· Digitalizacija i arhiv</li>
-                <li>· Prisustvo sijelu / sjednici</li>
+                <li>· Sudjelovanje na sijelu / sjednici</li>
                 <li>· Istraživanje baštine</li>
               </ul>
             </div>
@@ -89,10 +92,7 @@ export function Nagrade() {
         <Card className="p-4">
           <div className="flex items-center justify-between gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-pill border border-chipline bg-chip px-3 py-1 text-xs font-semibold text-navy">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="4" y="11" width="16" height="9" rx="2" />
-                <path d="M8 11V7a4 4 0 018 0v4" />
-              </svg>
+              <Lock size={13} strokeWidth={2.4} aria-hidden />
               Faza 1 · P2P zaključan
             </span>
             <span className="text-xs text-muted">Faza 2 · zaključano</span>
@@ -110,7 +110,7 @@ export function Nagrade() {
         <Card className="p-5">
           <div className="flex items-center justify-between">
             <p className="eyebrow">Zamijeni za EURe</p>
-            <span className="text-xs text-muted">Fond: {eur(loyalty.fundAvailable)} dostupno</span>
+            <span className="text-xs text-muted">Fond: {eur(fund)} dostupno</span>
           </div>
           <div className="mt-3 flex items-center justify-between">
             <Stepper value={amount} min={1} max={max} onChange={setAmount} />
@@ -125,7 +125,7 @@ export function Nagrade() {
           >
             Zamijeni sve ({edeur(max)})
           </button>
-          <Button full className="mt-3" onClick={() => setConfirming(true)}>
+          <Button full className="mt-3" disabled={max < 1} onClick={() => setConfirming(true)}>
             Zamijeni {edeur(amount)} → {eur(amount)} · potvrdi otiskom
           </Button>
         </Card>
@@ -171,10 +171,16 @@ export function Nagrade() {
         linesTitle="Detalji zamjene"
         lines={[
           { label: 'Zamijenjeno', value: edeur(amount) },
-          { label: 'Primljeno', value: `${eur(amount)} EURe` },
+          { label: 'Primljeno', value: eur(amount) },
         ]}
         footnote="Stiglo u tvoj novčanik"
-        onDone={() => setConfirming(false)}
+        onDone={() => {
+          setBalance((b) => b - amount);
+          setFund((f) => f - amount);
+          setAmount((a) => Math.max(1, Math.min(a, balance - amount)));
+          setConfirming(false);
+        }}
+        onCancel={() => setConfirming(false)}
       />
     </div>
   );

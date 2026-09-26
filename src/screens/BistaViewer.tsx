@@ -6,7 +6,12 @@
 //
 // Materijali: model nema teksture — jedan MeshStandardMaterial (boja + metalness +
 // roughness). Prijelaz između varijanti se ANIMIRA lerpanjem sva tri parametra u
-// render-petlji. Deep-link: ?screen=bista&materijal=kamen|patina|bronca.
+// render-petlji. Deep-link: ?screen=bista&materijal=kamen|patina|bronca (odabir se
+// zrcali u URL, kao u katalogu dbhz-3d-modeli.domovina.ai).
+//
+// Inline (kartica unutar ekrana koji se scrolla): touch-action pan-y + bez zooma — vertikalni
+// swipe scrolla stranicu, horizontalni vrti bistu, kotačić miša ne otima scroll. Zoom
+// (kotačić/pinch) tek u punom zaslonu.
 // Standalone verzija komponente: github.com/stepanic/dbhz-bista-3d
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Center, ContactShadows, useGLTF } from '@react-three/drei';
@@ -38,8 +43,31 @@ function variantFromUrl(): BistaVariant | null {
   return v && v in VARIANTS ? (v as BistaVariant) : null;
 }
 
+/** Zrcali odabrani materijal u adresu (dijeljiva poveznica); bronca je zadana → bez parametra. */
+function variantToUrl(v: BistaVariant) {
+  const url = new URL(window.location.href);
+  if (v === 'bronca') url.searchParams.delete('materijal');
+  else url.searchParams.set('materijal', v);
+  window.history.replaceState(window.history.state, '', url);
+}
+
+/** Napomena uz donji rub scene — vidljiva i u punom zaslonu (atribucija nije potvrđena). */
+const CAVEAT = 'Ilustrativna 3D digitalizacija · atribucija nepotvrđena';
+
+/** drei OrbitControls na spajanju postavi touch-action: none na izvor događaja. Inline to
+ *  vraćamo na pan-y (mora se mountati NAKON OrbitControls → efekt se izvrši poslije). */
+function TouchAction({ value }: { value: string }) {
+  const target = useThree((s) => s.events.connected) as HTMLElement | undefined;
+  const gl = useThree((s) => s.gl);
+  useEffect(() => {
+    const el = target ?? gl.domElement;
+    el.style.touchAction = value;
+  }, [target, gl, value]);
+  return null;
+}
+
 function Bust({ variant }: { variant: BistaVariant }) {
-  const { scene } = useGLTF(MODEL);
+  const { scene } = useGLTF(MODEL, false, false);
   // KLON scene: useGLTF kešira jedan THREE.Object3D, a isti objekt ne može biti u
   // dva scene grapha istovremeno (inline canvas + fullscreen overlay canvas).
   const instance = useMemo(() => scene.clone(true), [scene]);
@@ -106,14 +134,14 @@ function FitCamera({ subjectRef }: { subjectRef: React.RefObject<THREE.Group> })
 
 /** Kompletna scena — vlastiti Canvas. Renderira se i inline (kartica) i u
  *  fullscreen overlay portalu (svaki ima svoj WebGL kontekst i FitCamera). */
-function SceneCanvas({ variant }: { variant: BistaVariant }) {
+function SceneCanvas({ variant, interactive }: { variant: BistaVariant; interactive: boolean }) {
   const bustRef = useRef<THREE.Group>(null);
   return (
     <Canvas
       shadows
       dpr={[1, 2]}
       camera={{ position: [0, 0.2, 3.6], fov: 40 }}
-      style={{ touchAction: 'none' }}
+      style={{ touchAction: interactive ? 'none' : 'pan-y' }}
     >
       <color attach="background" args={[BG]} />
       <ambientLight intensity={0.55} />
@@ -138,10 +166,12 @@ function SceneCanvas({ variant }: { variant: BistaVariant }) {
         maxPolarAngle={THREE.MathUtils.degToRad(82)}
         autoRotate
         autoRotateSpeed={0.9}
+        enableZoom={interactive}
         minDistance={2.2}
         maxDistance={9}
         enableDamping
       />
+      <TouchAction value={interactive ? 'none' : 'pan-y'} />
     </Canvas>
   );
 }
@@ -154,7 +184,11 @@ function SceneCanvas({ variant }: { variant: BistaVariant }) {
 type FsMode = 'inline' | 'native' | 'overlay';
 
 export default function BistaViewer() {
-  const [variant, setVariant] = useState<BistaVariant>(() => variantFromUrl() ?? 'bronca');
+  const [variant, setVariantState] = useState<BistaVariant>(() => variantFromUrl() ?? 'bronca');
+  const setVariant = (v: BistaVariant) => {
+    setVariantState(v);
+    variantToUrl(v);
+  };
   const [fs, setFs] = useState<FsMode>('inline');
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -218,8 +252,8 @@ export default function BistaViewer() {
 
   const controls = (
     <>
-      {/* Izbor materijala — swatchevi (prijelaz je animiran u Bust/useFrame) */}
-      <div style={{ position: 'absolute', top: 10, left: 10, display: 'flex', gap: 8 }}>
+      {/* Izbor materijala — swatchevi (prijelaz je animiran u Bust/useFrame) + naziv aktivnog */}
+      <div role="group" aria-label="Materijal prikaza" style={{ position: 'absolute', top: 10, left: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
         {VARIANT_ORDER.map((v) => (
           <button
             key={v}
@@ -229,8 +263,8 @@ export default function BistaViewer() {
             aria-pressed={variant === v}
             onClick={() => setVariant(v)}
             style={{
-              width: 26,
-              height: 26,
+              width: 28,
+              height: 28,
               borderRadius: '50%',
               background: VARIANTS[v].color,
               cursor: 'pointer',
@@ -240,6 +274,9 @@ export default function BistaViewer() {
             }}
           />
         ))}
+        <span aria-live="polite" style={{ marginLeft: 2, fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>
+          {VARIANT_LABEL[variant]}
+        </span>
       </div>
 
       {/* Fullscreen toggle */}
@@ -252,8 +289,8 @@ export default function BistaViewer() {
           position: 'absolute',
           top: 10,
           right: 10,
-          width: 30,
-          height: 30,
+          width: 36,
+          height: 36,
           display: 'grid',
           placeItems: 'center',
           borderRadius: 8,
@@ -271,17 +308,24 @@ export default function BistaViewer() {
           )}
         </svg>
       </button>
+
+      {/* Uputa + napomena uz donji rub (bez pointer eventa — ne smeta rotaciji) */}
+      <div style={{ position: 'absolute', left: 10, right: 10, bottom: 8, textAlign: 'center', pointerEvents: 'none', fontSize: 11, lineHeight: 1.35, color: 'rgba(255,255,255,0.55)' }}>
+        {fs === 'inline' ? 'Povuci lijevo-desno za rotaciju · puni zaslon za zumiranje' : 'Povuci za rotaciju · kotačić ili dva prsta za zumiranje'}
+        <br />
+        {CAVEAT}
+      </div>
     </>
   );
 
   return (
     <div ref={wrapRef} style={{ position: 'relative', width: '100%', height: '100%', background: BG }}>
-      <SceneCanvas variant={variant} />
+      <SceneCanvas variant={variant} interactive={fs === 'native'} />
       {controls}
       {fs === 'overlay' &&
         createPortal(
           <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: BG }}>
-            <SceneCanvas variant={variant} />
+            <SceneCanvas variant={variant} interactive />
             {controls}
           </div>,
           document.body,
@@ -290,4 +334,6 @@ export default function BistaViewer() {
   );
 }
 
-useGLTF.preload(MODEL);
+// Bez Draco/meshopt dekodera: GLB nije komprimiran, a drei bi inače dohvatio Draco s gstatic.com
+// i kompilirao meshopt WASM — oboje blokira CSP (script-src 'self', bez wasm-unsafe-eval).
+useGLTF.preload(MODEL, false, false);

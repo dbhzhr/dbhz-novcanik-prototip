@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { Button, Fingerprint } from './ui';
-import { Search } from './icons';
+import { Check, Search } from './icons';
 
 export type ConfirmLine = { label: string; value: string };
 
@@ -11,6 +11,8 @@ export type ConfirmLine = { label: string; value: string };
  *  2) 'done'  — uspjeh + razdioba po namjenskim računima + javni zapis
  * U pravoj app fazi 'sign' = WebAuthn ceremonija, sve uplate u jednoj
  * MultiSend transakciji (jedna potvrda za N računa).
+ * Pristupačnost: role=dialog, Escape (potpis → odustani, gotovo → zatvori),
+ * fokus ostaje unutar dijaloga.
  */
 export function PaymentConfirm({
   open,
@@ -21,6 +23,7 @@ export function PaymentConfirm({
   doneTitle = 'Uplata uspješna',
   linesTitle = 'Razdioba',
   onDone,
+  onCancel,
 }: {
   open: boolean;
   amount: string;
@@ -30,8 +33,12 @@ export function PaymentConfirm({
   doneTitle?: string;
   linesTitle?: string;
   onDone: () => void;
+  /** Odustajanje u fazi potpisa (ništa se ne tereti). Bez njega se koristi onDone. */
+  onCancel?: () => void;
 }) {
   const [phase, setPhase] = useState<'sign' | 'done'>('sign');
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const cancel = onCancel ?? onDone;
 
   useEffect(() => {
     if (!open) return;
@@ -40,33 +47,72 @@ export function PaymentConfirm({
     return () => clearTimeout(t);
   }, [open]);
 
+  // Fokus na naslov trenutne faze (čitač ekrana najavi promjenu).
+  useEffect(() => {
+    if (open) dialogRef.current?.querySelector<HTMLElement>('h2')?.focus();
+  }, [open, phase]);
+
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      e.stopPropagation();
+      if (phase === 'sign') cancel();
+      else onDone();
+      return;
+    }
+    if (e.key !== 'Tab' || !dialogRef.current) return;
+    // Jednostavna zamka fokusa: Tab kruži unutar dijaloga.
+    const f = Array.from(dialogRef.current.querySelectorAll<HTMLElement>('button, [href], [tabindex]:not([tabindex="-1"])'));
+    if (f.length === 0) return e.preventDefault();
+    const first = f[0];
+    const last = f[f.length - 1];
+    if (e.shiftKey && (document.activeElement === first || !dialogRef.current.contains(document.activeElement))) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
+
   if (!open) return null;
 
   return createPortal(
     <div className="fixed inset-0 z-[60] flex justify-center bg-navy/25 backdrop-blur-sm">
-      <div className="relative flex h-full w-full max-w-[480px] flex-col overflow-y-auto bg-page animate-riseIn">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="payment-confirm-title"
+        onKeyDown={onKeyDown}
+        className="relative flex h-full w-full max-w-[480px] flex-col overflow-y-auto bg-page animate-riseIn"
+      >
         {phase === 'sign' ? (
         <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
           <div className="relative grid h-32 w-32 place-items-center">
             <span className="absolute inset-0 rounded-pill bg-orange/15 animate-pulseDot" />
             <Fingerprint size={84} />
           </div>
-          <h2 className="mt-8 text-2xl">Potvrdite otiskom</h2>
+          <h2 id="payment-confirm-title" tabIndex={-1} className="mt-8 text-2xl outline-none">
+            Potvrdite otiskom
+          </h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             {caption ?? 'Potvrdite uplatu'} · {amount}
             <br />
             Identitet provjerava Face ID — ništa se ne tereti bez vaše potvrde.
           </p>
+          <Button variant="ghost" className="mt-6" onClick={cancel}>
+            Odustani
+          </Button>
         </div>
       ) : (
         <div className="flex flex-1 flex-col px-6 pb-8 pt-12">
           <div className="flex flex-col items-center text-center">
-            <div className="grid h-20 w-20 place-items-center rounded-pill bg-orange text-white">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 6L9 17l-5-5" />
-              </svg>
+            <div className="grid h-20 w-20 place-items-center rounded-pill bg-orange text-on-gold">
+              <Check className="h-10 w-10" strokeWidth={2.5} aria-hidden />
             </div>
-            <h2 className="mt-5 text-2xl">{doneTitle}</h2>
+            <h2 id="payment-confirm-title" tabIndex={-1} className="mt-5 text-2xl outline-none">
+              {doneTitle}
+            </h2>
             <p className="mt-1 text-4xl font-semibold tracking-display tabular-nums text-navy">{amount}</p>
             {footnote && <p className="mt-2 text-sm text-muted">{footnote}</p>}
           </div>

@@ -1,16 +1,14 @@
 import { edeur, eur, bastina, type Bastina } from '../lib/mock';
 import { Card, ScreenTitle } from '../components/ui';
-import { Search, Shield, sectorIcon } from '../components/icons';
+import { Check, Search, Shield, sectorIcon } from '../components/icons';
 import { communityStats } from '../lib/mock';
 
-const statusMeta: Record<Bastina['status'], { label: string; cls: string }> = {
-  primljeno: { label: 'Uloženo ✓', cls: 'bg-orange/10 text-orange' },
+const statusMeta: Record<Bastina['status'], { label: string; cls: string; done?: boolean }> = {
+  primljeno: { label: 'Uloženo', cls: 'bg-orange/10 text-orange', done: true },
   'u obradi': { label: 'U pripremi', cls: 'bg-chip text-muted' },
 };
 
 export function Poduzetnici() {
-  const totalInvested = bastina.filter((p) => p.status === 'primljeno').reduce((a, p) => a + p.amount, 0);
-
   return (
     <div className="pb-6 animate-riseIn">
       <ScreenTitle
@@ -23,14 +21,14 @@ export function Poduzetnici() {
         {/* Hero */}
         <Card dark className="p-5">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-eyebrow text-white/55">Uloženo u baštinu</p>
+            <p className="text-xs uppercase tracking-eyebrow text-white/75">Uloženo u baštinu</p>
             <span className="rounded-pill bg-white/12 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wide">
               onchain · javno
             </span>
           </div>
-          <p className="mt-2 text-4xl font-semibold tracking-display tabular-nums">{eur(totalInvested)}</p>
-          <p className="mt-1 text-sm text-white/65">
-            {communityStats.heritageProjects} projekata baštine · prosječno {eur(communityStats.avgInvestment)}
+          <p className="mt-2 text-4xl font-semibold tracking-display tabular-nums">{eur(communityStats.investedInHeritage)}</p>
+          <p className="mt-1 text-sm text-white/75">
+            {communityStats.investedProjects} od {communityStats.heritageProjects} projekata uloženo · prosječno {eur(communityStats.avgInvestment)}
           </p>
         </Card>
 
@@ -61,8 +59,9 @@ export function Poduzetnici() {
                       </div>
                     </div>
                     <div className="mt-2 flex items-center justify-between">
-                      <span className={`rounded-pill px-2.5 py-0.5 text-[0.62rem] font-semibold ${sm.cls}`}>
+                      <span className={`inline-flex items-center gap-1 rounded-pill px-2.5 py-0.5 text-[0.62rem] font-semibold ${sm.cls}`}>
                         {sm.label}
+                        {sm.done && <Check className="h-3 w-3" aria-hidden />}
                       </span>
                       <span className="font-mono text-[0.62rem] text-muted">{p.address}</span>
                     </div>

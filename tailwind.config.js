@@ -18,6 +18,9 @@ export default {
           DEFAULT: 'rgb(var(--orange) / <alpha-value>)', // heraldičko zlato #D99E12 (CTA, akcent)
           light: 'rgb(var(--orange-light) / <alpha-value>)',
         },
+        // Tema-stabilni: hero kartice (bijeli tekst) i tekst na zlatnoj pozadini.
+        hero: 'rgb(var(--hero) / <alpha-value>)',
+        'on-gold': 'rgb(var(--on-gold) / <alpha-value>)',
         muted: 'rgb(var(--muted) / <alpha-value>)',
         surface: 'rgb(var(--surface) / <alpha-value>)',
         page: 'rgb(var(--page) / <alpha-value>)',

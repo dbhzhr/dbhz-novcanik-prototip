@@ -9,7 +9,7 @@ import {
   eur,
 } from '../lib/mock';
 import { Button, Card, Chip, ScreenTitle } from '../components/ui';
-import { FileText, Handshake, Search } from '../components/icons';
+import { Check, CreditCard, FileText, Handshake, Search } from '../components/icons';
 import { PaymentConfirm } from '../components/PaymentConfirm';
 import { navigate } from '../lib/router';
 
@@ -139,9 +139,10 @@ export function Doniraj() {
               <button
                 key={p}
                 onClick={() => setAmount(p)}
+                aria-pressed={amount === p}
                 className={`rounded-pill border py-2.5 text-sm font-semibold transition ${
                   amount === p
-                    ? 'border-orange bg-orange text-white'
+                    ? 'border-orange bg-orange text-on-gold'
                     : 'border-chipline bg-chip text-navy hover:border-navy/30'
                 }`}
               >
@@ -154,10 +155,8 @@ export function Doniraj() {
           <div className="mt-5 overflow-hidden rounded-card border border-navy/10">
             <div className="flex items-center justify-between bg-orange/5 px-4 py-3">
               <div className="flex items-center gap-2">
-                <span className="grid h-6 w-6 place-items-center rounded-pill bg-orange text-white">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
+                <span className="grid h-6 w-6 place-items-center rounded-pill bg-orange text-on-gold">
+                  <Check size={14} strokeWidth={3} aria-hidden />
                 </span>
                 <span className="text-sm font-semibold text-navy-ink">DBHZ novčanik · on-chain</span>
               </div>
@@ -169,10 +168,7 @@ export function Doniraj() {
             <div className="flex items-center justify-between border-t border-hairline px-4 py-3">
               <div className="flex items-center gap-2">
                 <span className="grid h-6 w-6 place-items-center rounded-pill bg-navy/10 text-navy">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="5" width="20" height="14" rx="2" />
-                    <path d="M2 10h20" />
-                  </svg>
+                  <CreditCard size={14} strokeWidth={2} aria-hidden />
                 </span>
                 <span className="text-sm text-muted">Kartica · Stripe</span>
               </div>
@@ -186,7 +182,7 @@ export function Doniraj() {
           </div>
           <p className="mt-2 text-center text-[0.7rem] leading-relaxed text-muted">
             Kartična naknada {(CARD_FEE_PCT * 100).toFixed(1).replace('.', ',')}% + {eur(CARD_FEE_FIXED)} po
-            transakciji „pojede" mikrodonacije. On-chain transfer stiže cijel.
+            transakciji „pojede” mikrodonacije. On-chain transfer stiže u cijelosti.
           </p>
           <button
             onClick={() => navigate('/dokumenti/isplativost')}
@@ -218,7 +214,7 @@ export function Doniraj() {
           <Search className="mt-0.5 h-4 w-4 shrink-0 text-navy" aria-hidden />
           <p className="text-xs leading-relaxed text-muted">
             <span className="font-semibold text-navy">Potpuna transparentnost.</span> Svaka donacija i svako
-            ulaganje u baštinu javno su vidljivi javnosti kroz auditiranu blockchain platformu.
+            ulaganje u baštinu javno su vidljivi i provjerljivi na Gnosis lancu.
           </p>
         </div>
 
@@ -247,6 +243,7 @@ export function Doniraj() {
         }
         doneTitle="Donacija uspješna"
         linesTitle="Razdioba"
+        onCancel={() => setConfirming(false)}
         onDone={() => {
           if (isSolidarity) setRaised((r) => r + amount);
           setConfirming(false);
@@ -270,6 +267,7 @@ function TargetButton({
   return (
     <button
       onClick={onClick}
+      aria-pressed={active}
       className={`rounded-card border px-3 py-3 text-left transition ${
         active ? 'border-orange bg-orange/5' : 'border-chipline bg-surface hover:border-navy/30'
       }`}
@@ -292,7 +290,7 @@ function Toggle({
   onChange: () => void;
 }) {
   return (
-    <button onClick={onChange} className="flex w-full items-center justify-between px-4 py-4 text-left">
+    <button role="switch" aria-checked={on} onClick={onChange} className="flex w-full items-center justify-between px-4 py-4 text-left">
       <div className="pr-4">
         <p className="text-sm font-semibold text-navy-ink">{label}</p>
         <p className="mt-0.5 text-xs text-muted">{hint}</p>
