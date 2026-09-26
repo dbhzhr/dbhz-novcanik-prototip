@@ -1,11 +1,27 @@
 // Minimalni service worker — čini prototip instalabilnim (PWA) i daje
 // offline app-shell. Network-first za navigaciju (offline → keširani shell),
 // cache-first za statične resurse s vlastitog origina. API se NIKAD ne kešira.
-const CACHE = 'dbhz-novcanik-v7';
+//
+// Ažuriranje (UpdateBanner): prva instalacija se aktivira odmah; NOVA verzija
+// (kad već postoji aktivni worker) ČEKA u stanju `waiting` dok korisnik u banneru
+// ne tapne „Ažuriraj” → stranica pošalje {type:'SKIP_WAITING'} → skipWaiting() →
+// controllerchange → reload. Tako se usred rada ne mijenja shell ispod korisnika.
+const CACHE = 'dbhz-novcanik-v8';
 const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/emblem.png'];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  // Prva instalacija (nema aktivnog workera) → odmah aktiviraj; inače čekaj korisnika.
+  const firstInstall = !self.registration.active;
+  e.waitUntil(
+    caches
+      .open(CACHE)
+      .then((c) => c.addAll(SHELL))
+      .then(() => (firstInstall ? self.skipWaiting() : undefined)),
+  );
+});
+
+self.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', (e) => {
@@ -32,7 +48,10 @@ self.addEventListener('fetch', (e) => {
         hit ||
         fetch(request).then((res) => {
           // Keširaj samo uspješne, potpune odgovore (ne 404/500 ni djelomične 206)
-          if (res.ok && res.status === 200 && res.type === 'basic') {
+          // i nikad HTML za ne-navigacijski zahtjev: CF Pages za nepostojeći asset vraća
+          // index.html (200, text/html) — takav odgovor u kešu bi trajno slomio app.
+          const isHtml = (res.headers.get('content-type') || '').includes('text/html');
+          if (res.ok && res.status === 200 && res.type === 'basic' && !isHtml) {
             const copy = res.clone();
             caches.open(CACHE).then((c) => c.put(request, copy)).catch(() => {});
           }

@@ -22,6 +22,16 @@ import {
   Search,
   Shield,
   Vote,
+  ChevronLeft,
+  CircleCheck,
+  KeyRound,
+  LogIn,
+  ShieldCheck,
+  Smartphone,
+  Sparkles,
+  TriangleAlert,
+  Wallet,
+  Fingerprint as FingerprintIcon,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -46,6 +56,16 @@ export {
   Search,
   Shield,
   Vote,
+  ChevronLeft,
+  CircleCheck,
+  KeyRound,
+  LogIn,
+  ShieldCheck,
+  Smartphone,
+  Sparkles,
+  TriangleAlert,
+  Wallet,
+  FingerprintIcon,
 };
 export type { LucideIcon };
 
