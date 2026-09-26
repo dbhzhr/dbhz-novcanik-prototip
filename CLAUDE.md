@@ -39,6 +39,8 @@ CLOUDFLARE_ACCOUNT_ID=7dc7167b7e2e00923bfa7cd697df14e4 \
 
 ## Sigurnost (revizija 2026-09-26)
 
+Zapis revizije (mjerenja, odbačene alternative, otvorene stavke): [`docs/2026-09-26-revizija-i-backport-2.md`](docs/2026-09-26-revizija-i-backport-2.md).
+
 - **`public/_headers`**: CSP (`script-src 'self'` — NEMA inline skripti; tema je u `public/theme-init.js`),
   `frame-ancestors 'none'`, HSTS, nosniff, Referrer/Permissions-Policy. Novi vanjski resurs (CDN, font,
   API) → dodaj ga u CSP ili se tiho blokira (provjeri konzolu).
