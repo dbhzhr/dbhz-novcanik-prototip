@@ -28,6 +28,9 @@ CLOUDFLARE_ACCOUNT_ID=7dc7167b7e2e00923bfa7cd697df14e4 \
 - **KV namespace** `FEEDBACK_KV` = `7bca47ff6cf84d1a8a885e14dca28c5c` (u `wrangler.toml`).
 - **Custom domena** se dodaje API-jem (`POST /accounts/:id/pages/projects/dbhz-prototip/domains`), ali
   CNAME `dbhz-prototip → dbhz-prototip.pages.dev` u zoni `domovina.ai` treba ručno (wrangler OAuth nema DNS scope).
+  Nakon dodavanja CNAME-a domena ostaje `pending` („CNAME record not set“) dok se ne pokrene ponovna validacija:
+  `PATCH …/pages/projects/dbhz-prototip/domains/<domena>` → `active` za ~1–2 min. Ako si domenu `dig`-ao prije
+  nego je zapis postojao, macOS/Chrome pamte NXDOMAIN — provjeri s `curl --resolve <domena>:443:<IP>`.
 - **Service worker kešira** — za novu verziju hard refresh / zatvori-otvori PWA. Cache ime `dbhz-novcanik-vN`
   u `public/sw.js` (trenutno v7) — **bump pri svakom deployu s promjenom shella**.
 
