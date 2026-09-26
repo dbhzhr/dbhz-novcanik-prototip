@@ -117,6 +117,9 @@ P2P → izvan EMT); ulaganje u baštinu = trošak programske djelatnosti (NE gra
    OBAVEZNO promijeni font i u `ensureFonts()` i u mermaid `themeVariables.fontFamily`, ne samo u CSS-u.
 2. **Desktop zoom:** `md:[zoom:0.8]` SAMO na app-kompoziciji u `App.tsx`, **NE** na `html` (lomi mermaidov
    `getBoundingClientRect` na `/dokumenti`). Ne vraćaj zoom na html.
+   ⚠️ Zoom lomi i sve što se mjeri `getBoundingClientRect`-om UNUTAR zumirane kompozicije: R3F Canvas je
+   postavljao canvas na 0,8× kartice → 0,64 vidljivo, zalijepljeno gore lijevo = „bista necentrirana“ samo na
+   desktopu (viđeno 2026-09-26). Fix: `<Canvas resize={{ offsetSize: true }}>` (offset* nisu zumirani).
 3. **Tipografski navodnici u HTML/JSX atributima:** `„Braća Hrvatskoga Zmaja"` s ravnim `"` unutar
    `content="…"` (index.html) ili `sub="…"` (JSX) **lomi parser** — koristi `”` (U+201D) ili `{'…'}`.
 4. **Tailwind opacity** (`bg-navy/10`) radi samo jer su varijable RGB kanali (`12 84 48`), ne hex.

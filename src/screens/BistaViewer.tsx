@@ -141,6 +141,11 @@ function SceneCanvas({ variant, interactive }: { variant: BistaVariant; interact
       shadows
       dpr={[1, 2]}
       camera={{ position: [0, 0.2, 3.6], fov: 40 }}
+      // offsetSize: mjeri offsetWidth/Height umjesto getBoundingClientRect. Na desktopu je
+      // app-kompozicija pod CSS `zoom: 0.8` (App.tsx) → bounding rect je već zumiran, R3F bi tu
+      // veličinu postavio canvasu pa bi je zoom smanjio još jednom: canvas = 64 % kartice,
+      // zalijepljen gore lijevo → model necentriran. offset* su nezumirani CSS pikseli.
+      resize={{ offsetSize: true }}
       style={{ touchAction: interactive ? 'none' : 'pan-y' }}
     >
       <color attach="background" args={[BG]} />
