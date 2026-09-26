@@ -4,7 +4,25 @@ import { navigate } from '../lib/router';
 import { colorFor, fetchComments, type Comment } from '../lib/feedback';
 import { MessageCircle } from './icons';
 
-const NAME_KEY = 'edw_fb_name';
+const NAME_KEY = 'dbhz_fb_name';
+const DRAFT_PREFIX = 'dbhz_fb_draft_';
+
+// localStorage može baciti (privatni način, blokirani podaci) — komentari rade i bez njega.
+function lsGet(k: string) {
+  try {
+    return localStorage.getItem(k);
+  } catch {
+    return null;
+  }
+}
+function lsSet(k: string, v: string | null) {
+  try {
+    if (v === null) localStorage.removeItem(k);
+    else localStorage.setItem(k, v);
+  } catch {
+    /* ignore */
+  }
+}
 
 function timeAgo(ts: number) {
   const s = Math.max(0, Math.floor((Date.now() - ts) / 1000));
@@ -21,10 +39,11 @@ function timeAgo(ts: number) {
 export function FeedbackWidget({ screen, screenLabel }: { screen: string; screenLabel: string }) {
   const [open, setOpen] = useState(false);
   const [all, setAll] = useState<Comment[]>([]);
-  const [name, setName] = useState<string>(() => localStorage.getItem(NAME_KEY) || '');
+  const [name, setName] = useState<string>(() => lsGet(NAME_KEY) || lsGet('edw_fb_name') || '');
   const [where, setWhere] = useState('');
   const [comment, setComment] = useState('');
   const [state, setState] = useState<'idle' | 'slanje' | 'ok' | 'err'>('idle');
+  const [errMsg, setErrMsg] = useState('');
 
   const load = useCallback(() => {
     fetchComments().then(setAll).catch(() => {});
@@ -42,14 +61,22 @@ export function FeedbackWidget({ screen, screenLabel }: { screen: string; screen
   }, [open, screenLabel]);
 
   // Draft se sprema po ekranu (localStorage) da se ne izgubi pri navigaciji/zatvaranju.
-  const draftKey = 'edw_fb_draft_' + screen;
+  const draftKey = DRAFT_PREFIX + screen;
   useEffect(() => {
-    setComment(localStorage.getItem('edw_fb_draft_' + screen) || '');
+    setComment(lsGet(DRAFT_PREFIX + screen) || '');
   }, [screen]);
   const onComment = (v: string) => {
     setComment(v);
-    localStorage.setItem(draftKey, v);
+    lsSet(draftKey, v);
   };
+
+  // Escape zatvara modal
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open]);
 
   const thread = all.filter((c) => c.screen === screen).sort((a, b) => a.ts - b.ts);
   const finalName = name.trim();
@@ -63,14 +90,18 @@ export function FeedbackWidget({ screen, screenLabel }: { screen: string; screen
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ name: finalName, screen, where: where.trim(), comment: comment.trim() }),
       });
-      if (!res.ok) throw new Error('http ' + res.status);
-      localStorage.setItem(NAME_KEY, finalName);
-      localStorage.removeItem(draftKey);
+      if (!res.ok) {
+        const d = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(res.status === 429 && d.error ? d.error : 'Greška — pokušaj ponovno.');
+      }
+      lsSet(NAME_KEY, finalName);
+      lsSet(draftKey, null);
       setComment('');
       setState('ok');
       load();
       setTimeout(() => setState('idle'), 1800);
-    } catch {
+    } catch (e) {
+      setErrMsg(e instanceof Error && !e.message.startsWith('Failed') ? e.message : 'Greška — pokušaj ponovno.');
       setState('err');
     }
   }
@@ -91,6 +122,9 @@ export function FeedbackWidget({ screen, screenLabel }: { screen: string; screen
         createPortal(
           <div className="fixed inset-0 z-[70] flex items-end justify-center bg-navy/30 backdrop-blur-sm sm:items-center" onClick={() => setOpen(false)}>
             <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="fb-title"
               className="flex max-h-[92dvh] w-full max-w-[460px] flex-col overflow-hidden rounded-t-card bg-surface shadow-card sm:rounded-card animate-riseIn"
               onClick={(e) => e.stopPropagation()}
             >
@@ -98,7 +132,7 @@ export function FeedbackWidget({ screen, screenLabel }: { screen: string; screen
               <div className="flex items-start justify-between border-b border-hairline px-5 py-4">
                 <div>
                   <p className="eyebrow">Thread · {screenLabel}</p>
-                  <h3 className="mt-1 text-lg font-semibold text-navy">Komentari na ovom ekranu</h3>
+                  <h3 id="fb-title" className="mt-1 text-lg font-semibold text-navy">Komentari na ovom ekranu</h3>
                   <button onClick={() => navigate('/feedback')} className="mt-1 text-xs font-semibold text-navy-mid hover:text-orange">
                     Pregled svih komentara (svi ekrani) →
                   </button>
@@ -130,6 +164,8 @@ export function FeedbackWidget({ screen, screenLabel }: { screen: string; screen
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Tvoje ime"
+                  aria-label="Tvoje ime"
+                  maxLength={60}
                   className="w-full rounded-2xl border border-chipline bg-page px-3 py-2 text-sm font-semibold text-navy-ink outline-none focus:border-navy/40"
                   style={finalName ? { borderColor: colorFor(finalName).accent } : undefined}
                 />
@@ -137,18 +173,20 @@ export function FeedbackWidget({ screen, screenLabel }: { screen: string; screen
                   value={comment}
                   onChange={(e) => onComment(e.target.value)}
                   rows={5}
+                  aria-label="Komentar"
+                  maxLength={4000}
                   placeholder={`Komentar na "${screenLabel}"… (slobodno dulje — skica se sprema automatski)`}
                   className="mt-2 min-h-[8rem] w-full resize-y rounded-2xl border border-chipline bg-page px-3 py-2.5 text-sm leading-relaxed text-navy-ink outline-none focus:border-navy/40"
                 />
                 <div className="mt-1 flex items-center justify-between">
                   <span className="text-xs text-muted">{comment.trim() ? 'Skica se sprema automatski' : ''}</span>
-                  {state === 'err' && <span className="text-xs font-semibold text-red-600">Greška — pokušaj ponovno.</span>}
+                  {state === 'err' && <span className="text-xs font-semibold text-red-600">{errMsg}</span>}
                   {state === 'ok' && <span className="text-xs font-semibold text-green-600">✓ Spremljeno</span>}
                 </div>
                 <button
                   onClick={submit}
                   disabled={!finalName || !comment.trim() || state === 'slanje'}
-                  className="mt-2 w-full rounded-pill bg-orange py-3 text-sm font-semibold text-white transition hover:brightness-95 disabled:opacity-50"
+                  className="mt-2 w-full rounded-pill bg-orange py-3 text-sm font-semibold text-on-gold transition hover:brightness-95 disabled:opacity-50"
                 >
                   {state === 'slanje' ? 'Šaljem…' : 'Pošalji komentar'}
                 </button>

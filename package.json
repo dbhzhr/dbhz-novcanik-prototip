@@ -1,9 +1,9 @@
 {
-  "name": "mama-uspio-sam-novcanik",
+  "name": "dbhz-novcanik-prototip",
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "description": "Mama uspio sam novčanik — design prototip (Faza 1). Self-custody EURe wallet za donacije, grant fondove i mamaEUR nagrade za mentore.",
+  "description": "DBHZ novčanik — design prototip (Faza 1). Self-custody EURe novčanik Družbe „Braća Hrvatskoga Zmaja”: donacije, članarina, fondovi za baštinu i zmajEUR priznanja.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

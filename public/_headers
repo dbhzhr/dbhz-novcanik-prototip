@@ -1,14 +1,34 @@
+# Sigurnosna zaglavlja za sve odgovore.
+# CSP: skripte samo s vlastitog origina (nema inline skripti — tema je u /theme-init.js);
+# style 'unsafe-inline' treba zbog React style atributa i mermaid <style> u SVG-u;
+# Google Fonts (Titillium Web); blob:/data: za three.js/GLTFLoader i mermaid.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' blob: data:; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), fullscreen=(self)
+  Cross-Origin-Opener-Policy: same-origin
+
 # Service worker mora biti uvijek svjež da update prođe
 /sw.js
+  Cache-Control: no-cache
+
+/theme-init.js
   Cache-Control: no-cache
 
 /manifest.webmanifest
   Cache-Control: public, max-age=3600
 
-# Fontovi i ikone — dugotrajni cache (sadržaj se ne mijenja)
-/fonts/*
+# Vite asseti imaju hash u imenu → nepromjenjivi
+/assets/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Ikone, grb i 3D model
 /icons/*
   Cache-Control: public, max-age=604800
 /brand/*
+  Cache-Control: public, max-age=604800
+/models/*
   Cache-Control: public, max-age=604800

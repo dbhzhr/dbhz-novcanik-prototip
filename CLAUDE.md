@@ -10,9 +10,11 @@ Naučeno znanje i konvencije za buduće sesije. Čitaj prije rada.
 kloniran iz `mamauspiosam/novcanik-prototip` (isti DOMOVINA Wallet stack), sadržajno prilagođen baštinskom
 use-caseu: transparentne donacije i članarina → fondovi za očuvanje baštine → zmajEUR priznanje volonterskog rada.
 
-- **Lokalni dir:** `/Users/ms/git/dbhz/dbhz-novcanik-prototip`
+- **Lokalni dir:** `/Volumes/DOMOVINA2TB/git/dbhz/dbhz-novcanik-prototip` (od 2026-09; prije `~/git/dbhz/…`)
+- **Remotei:** `origin` = github.com/dbhzhr/dbhz-novcanik-prototip · `personal` = github.com/stepanic/dbhz-novcanik-prototip (pushaj oba)
 - **Brand SSOT:** [`BRAND.md`](BRAND.md) (boje izvedene iz STVARNOG zmajskog grba + CSS teme dbhz.hr, 20.06.2026.)
-- **Live:** https://dbhz-prototip.pages.dev
+- **Live:** https://dbhz-prototip.domovina.ai (Pages custom domain, od 2026-09-26) · fallback https://dbhz-prototip.pages.dev
+  (stara domena `dbhzw-prototip.domovina.ai` i dalje pokazuje na isti projekt)
 - ⚠️ **Logo i ime Družbe koriste se isključivo za demo prototip; produkcija traži suglasnost Družbe.**
 
 ## Deploy (Cloudflare Pages)
@@ -23,11 +25,25 @@ CLOUDFLARE_ACCOUNT_ID=7dc7167b7e2e00923bfa7cd697df14e4 \
   npx wrangler pages deploy dist --project-name=dbhz-prototip --branch=main --commit-dirty=true
 ```
 - Account: **D.O.M.** = `7dc7167b7e2e00923bfa7cd697df14e4` (env var; account_id nije u Pages wrangler.toml).
-- **KV namespace** `FEEDBACK_KV` — id u `wrangler.toml` treba popuniti:
-  `wrangler kv namespace create "dbhz-prototip-feedback" --account-id 7dc7167b7e2e00923bfa7cd697df14e4`
-  → zapiši id u `[[kv_namespaces]] id = "..."`.
+- **KV namespace** `FEEDBACK_KV` = `7bca47ff6cf84d1a8a885e14dca28c5c` (u `wrangler.toml`).
+- **Custom domena** se dodaje API-jem (`POST /accounts/:id/pages/projects/dbhz-prototip/domains`), ali
+  CNAME `dbhz-prototip → dbhz-prototip.pages.dev` u zoni `domovina.ai` treba ručno (wrangler OAuth nema DNS scope).
 - **Service worker kešira** — za novu verziju hard refresh / zatvori-otvori PWA. Cache ime `dbhz-novcanik-vN`
-  u `public/sw.js` (trenutno v6) — **bump pri svakom deployu s promjenom shella**.
+  u `public/sw.js` (trenutno v7) — **bump pri svakom deployu s promjenom shella**.
+
+## Sigurnost (revizija 2026-09-26)
+
+- **`public/_headers`**: CSP (`script-src 'self'` — NEMA inline skripti; tema je u `public/theme-init.js`),
+  `frame-ancestors 'none'`, HSTS, nosniff, Referrer/Permissions-Policy. Novi vanjski resurs (CDN, font,
+  API) → dodaj ga u CSP ili se tiho blokira (provjeri konzolu).
+- **`/api/feedback`** je javan bez prijave: POST traži `application/json` + Origin s popisa (`ALLOWED_HOSTS`
+  u `functions/api/feedback.ts` — **nova domena ide na popis**), rate limit 10/10 min po IP-u (KV `rl:*`),
+  max 2000 komentara, polja skraćena i očišćena od kontrolnih znakova. GET čita samo `fb:*` ključeve kojih
+  nema u indexu. Za pravu produkciju: prijava (Cloudflare Access) ili Turnstile.
+- **SW** nikad ne kešira `/api/*` ni tuđe origine, a kešira samo `200 basic` odgovore (prije je
+  `/api/feedback` bio cache-first zauvijek → komentari se nisu osvježavali).
+- `npm audit --omit=dev` = 0. Preostaje dev-only esbuild/vite 5 advisory (dev server) — ne izlaži `npm run dev`
+  na mrežu (`--host`).
 
 ## Brand (SSOT: `BRAND.md`)
 
@@ -151,7 +167,7 @@ P2P → izvan EMT); ulaganje u baštinu = trošak programske djelatnosti (NE gra
   jer predak s transformom/animacijom (`animate-riseIn`!) postaje containing block → model "potone" ispod
   viewporta (viđeno na iPhoneu). GLTF scenu klonirati (`scene.clone(true)`) — isti THREE objekt ne može u
   dva scene grapha. Repro na desktopu: `delete Element.prototype.requestFullscreen` (+ webkit) pa klik.
-- **Standalone verzija komponente:** `/Users/ms/git/dbhz/bista-3d` (Vite + React 18 + R3F 8 + drei 9, iste
+- **Standalone verzija komponente:** `/Volumes/DOMOVINA2TB/git/dbhz/bista-3d` (Vite + React 18 + R3F 8 + drei 9, iste
   verzije kao wallet) — izolirani razvoj/demo, komponenta `src/BistaViewer.tsx` s propsima
   (elevationDeg/autoRotate/initialDistance/materialColor).
 - **FitCamera (responzivno kadriranje):** na promjenu veličine viewporta (fullscreen, rotacija ekrana)
