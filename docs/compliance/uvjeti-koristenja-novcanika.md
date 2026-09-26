@@ -195,7 +195,7 @@ flowchart TB
 
 ## 10. Upravljanje izmjenama — višestruki potpis (decentralizacija)
 
-10.1. **Zajednički Safe Družbe.** Riznicu Družbe, fondove za baštinu, Fond za isplate i parametre pametnih ugovora (uključujući pravila izdavanja zmajEUR-a) ne kontrolira nijedan pojedinac. Njima upravlja **Meštarski zbor putem Safe novčanika s višestrukim potpisom (multisignature)** uz konfigurirani **prag potpisa M-od-N** (npr. 3 od 5 meštara).
+10.1. **Zajednički Safe Družbe.** Riznicu Družbe, fondove za baštinu, Fond za isplate i parametre pametnih ugovora (uključujući pravila izdavanja zmajEUR-a) ne kontrolira nijedan pojedinac. Njima upravlja **Meštarski zbor putem Safe novčanika s višestrukim potpisom (multisignature)** uz konfigurirani **prag potpisa M-od-N** (npr. 5 od 9 — većina Meštarskog zbora; ilustrativno).
 
 10.2. **Nijedna izmjena nije centralizirana.** Bilo koja izmjena parametara ili prebacivanje zastavica (v. poglavlje 11) može se izvršiti **isključivo** ako potreban broj meštara potpiše transakciju. Pojedini meštar ne može sam izvršiti izmjenu.
 

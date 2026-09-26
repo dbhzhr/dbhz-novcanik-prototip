@@ -74,3 +74,39 @@ Fork-kontekst: `/Users/ms/git/domovinatv/novcanik-template/LOZA-NOVCANIKA.md`.
 - Ažuriraj CLAUDE.md (nova sekcija: ikone/splash/OG konvencije) i memory datoteke
   (dbhz-prototip memorija: što je backportano, iz kojih commitova).
 - 3D bista i svi njeni gotchas ostaju netaknuti; sve kopije hrvatski; iznosi ilustrativni.
+
+---
+
+# Backport 2 (2026-09-26) — znanje iz funkcionalnog novčanika i e-demokracije
+
+Izvor odabran pregledom loze (2026-09-26): jedini pravi self-custody kod i najbogatija dokumentacija su u
+funkcionalnom novčaniku; među prototipovima je samo e-demokracija dobila nešto novo nakon Backporta 1.
+DBHZ je Faza 1 (mock) → **prenosi se znanje, obrasci i tekstovi, ne onchain kod.**
+
+| Izvor | Commit / datoteka | Što |
+|---|---|---|
+| `/Users/ms/git/domovinatv/pay.domovina.ai` | `docs/postmortems/0001-trapped-funds-passkey-only-campaign-safe.md` | lekcija: kampanjski Safe samo s passkeyem = zarobljena sredstva |
+| isto | `wallet/docs/security-custody-model.md`, `docs/decisions/0001`, `0008`, `0012` | model skrbništva, više passkeyeva, seed kao drugi vlasnik, nema server-side recoveryja |
+| isto | `docs/decisions/0016-tenant-payout-whitelist.md` | fail-closed whitelist isplata |
+| isto | `wallet/docs/user-flows.md`, `wallet/docs/passkey-onboarding.md` | realističan onboarding tok (mock) |
+| isto | `wallet/src/components/UpdateBanner.tsx`, `wallet/docs/deploy-and-pwa.md` | banner „nova verzija” umjesto ručnog hard refresha |
+| `/Volumes/DOMOVINA2TB/git/e-demokracija/novcanik` | `a13c82d` → `docs/ROADMAP.md` | metodologija i faze od prototipa do pravog novčanika |
+
+Namjerno izostavljeno: ekran Pošalji/QR skener (DBHZ je donacijski novčanik), pitch deck (SAFE/vlasništvo
+nije primjenjivo na udrugu), interna Monerium ToS analiza (ne objavljuje se), neprovjereni nalazi WP-01/02/03/06
+iz `docs/reviews/2026-07-fable5`.
+
+### Faza A — dokument „Sigurnost i skrbništvo” (`docs/compliance/sigurnost-i-skrbnistvo.md`, `/dokumenti/sigurnost`)
+Model skrbništva + višestruki passkeyevi + seed kao drugi vlasnik + postmortem kao lekcija za kampanjske
+Safeove (bista, obnova Ozlja) + whitelist isplata fondova. Mermaid dijagrami, sve kao ciljna arhitektura.
+
+### Faza B — plan razvoja (`docs/compliance/plan-razvoja.md`, `/dokumenti/plan-razvoja`)
+ROADMAP e-demokracije prilagođen DBHZ-u (bista, glasovanje, članarina 1 €/tj., fondovi baštine).
+
+### Faza C — Onboarding (mock) + UpdateBanner
+Onboarding po `user-flows.md`/`passkey-onboarding.md` (kreiranje passkeya, dodavanje drugog uređaja,
+upozorenje o duplim passkeyevima) — sve mock. UpdateBanner: SW `waiting` → banner → `SKIP_WAITING` → reload.
+
+### Faza D — integracija
+Registracija dokumenata u `DocsPage`, tehnički paneli (`SCREEN_DOCS`) za Bista/Doniraj/Fondovi s lekcijom
+postmortema i whitelistom, oznaka „isplata samo na odobrene račune Družbe” na fondovima, CLAUDE.md, deploy.
